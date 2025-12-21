@@ -4,22 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Учебная ЭВМ — макет (v2.0)</title>
-    <link rel="stylesheet" href="Satus.css" />
-  </head>
-  <body>
-    <header class="header">
-      <div class="header-left">
+        <link rel="stylesheet" href="Satus.css">
+
+</head>
+<body>
+<div class="header">
+    <div style="display:flex;align-items:center">
         <div class="logo">Учебная ЭВМ</div>
         <div class="subtitle"></div>
-      </div>
-      <div class="header-center">
+    </div>
+
+    <div class="header-center">
         <button class="cpu-btn step" id="stepBtn">⏭ Шаг</button>
         <button class="cpu-btn run" id="runBtn">▶ Пуск</button>
         <button class="cpu-btn stop" id="stopBtn">■ Стоп</button>
-      </div>
-    </header>
-    <div class="wrap">
-      <section class="col left">
+    </div>
+</div>
+
+<div class="wrap">
+    <!-- LEFT: memory (words, 2 bytes) -->
+    <div class="col left">
+
         <div class="mem-toolbar">
           <label>
             <input type="checkbox" />
@@ -35,357 +40,150 @@
           <input class="toolbar-input" placeholder="0x020" />
           <button class="toolbar-btn go-btn">Go</button>
         </div>
-        <div class="mem-wrapper">
-          <table class="mem-table" id="memTable" aria-label="memory table">
-            <thead>
-              <tr>
-                <th>Адрес</th>
-                <th>Команда</th>
-                <th>Код</th>
-              </tr>
-            </thead>
-            <tbody id="memBody">
-              <tr data-word-index="0">
-                <td>0x000</td>
-                <td>NOP</td>
-                <td>0x1105</td>
-              </tr>
-              <tr data-word-index="1">
-                <td>0x002</td>
-                <td>NOP</td>
-                <td>0x4800</td>
-              </tr>
-              <tr data-word-index="2">
-                <td>0x004</td>
-                <td>NOP</td>
-                <td>0x8440</td>
-              </tr>
-              <tr data-word-index="3">
-                <td>0x006</td>
-                <td>NOP</td>
-                <td>0x1234</td>
-              </tr>
-              <tr data-word-index="4">
-                <td>0x008</td>
-                <td>NOP</td>
-                <td>0x0404</td>
-              </tr>
-              <tr data-word-index="5">
-                <td>0x00A</td>
-                <td>NOP</td>
-                <td>0x0505</td>
-              </tr>
-              <tr data-word-index="6">
-                <td>0x00C</td>
-                <td>NOP</td>
-                <td>0x0606</td>
-              </tr>
-              <tr data-word-index="7">
-                <td>0x00E</td>
-                <td>NOP</td>
-                <td>0x0707</td>
-              </tr>
-              <tr data-word-index="8">
-                <td>0x010</td>
-                <td>NOP</td>
-                <td>0x0808</td>
-              </tr>
-              <tr data-word-index="9">
-                <td>0x012</td>
-                <td>NOP</td>
-                <td>0x0909</td>
-              </tr>
-              <tr data-word-index="10">
-                <td>0x014</td>
-                <td>NOP</td>
-                <td>0x0A0A</td>
-              </tr>
-              <tr data-word-index="11">
-                <td>0x016</td>
-                <td>NOP</td>
-                <td>0x0B0B</td>
-              </tr>
-              <tr data-word-index="12">
-                <td>0x018</td>
-                <td>NOP</td>
-                <td>0x0C0C</td>
-              </tr>
-              <tr data-word-index="13">
-                <td>0x01A</td>
-                <td>NOP</td>
-                <td>0x0D0D</td>
-              </tr>
-              <tr data-word-index="14">
-                <td>0x01C</td>
-                <td>NOP</td>
-                <td>0x0E0E</td>
-              </tr>
-              <tr data-word-index="15">
-                <td>0x01E</td>
-                <td>NOP</td>
-                <td>0x0F0F</td>
-              </tr>
-              <tr data-word-index="16">
-                <td>0x020</td>
-                <td>NOP</td>
-                <td>0x1010</td>
-              </tr>
-              <tr data-word-index="17">
-                <td>0x022</td>
-                <td>NOP</td>
-                <td>0x1111</td>
-              </tr>
-              <tr data-word-index="18">
-                <td>0x024</td>
-                <td>NOP</td>
-                <td>0x1212</td>
-              </tr>
-              <tr data-word-index="19">
-                <td>0x026</td>
-                <td>NOP</td>
-                <td>0x1313</td>
-              </tr>
-              <tr data-word-index="20">
-                <td>0x028</td>
-                <td>NOP</td>
-                <td>0x1414</td>
-              </tr>
-              <tr data-word-index="21">
-                <td>0x02A</td>
-                <td>NOP</td>
-                <td>0x1515</td>
-              </tr>
-              <tr data-word-index="22">
-                <td>0x02C</td>
-                <td>NOP</td>
-                <td>0x1616</td>
-              </tr>
-              <tr data-word-index="23">
-                <td>0x02E</td>
-                <td>NOP</td>
-                <td>0x1717</td>
-              </tr>
-              <tr data-word-index="24">
-                <td>0x030</td>
-                <td>NOP</td>
-                <td>0x1818</td>
-              </tr>
-              <tr data-word-index="25">
-                <td>0x032</td>
-                <td>NOP</td>
-                <td>0x1919</td>
-              </tr>
-              <tr data-word-index="26">
-                <td>0x034</td>
-                <td>NOP</td>
-                <td>0x1A1A</td>
-              </tr>
-              <tr data-word-index="27">
-                <td>0x036</td>
-                <td>NOP</td>
-                <td>0x1B1B</td>
-              </tr>
-              <tr data-word-index="28">
-                <td>0x038</td>
-                <td>NOP</td>
-                <td>0x1C1C</td>
-              </tr>
-              <tr data-word-index="29">
-                <td>0x03A</td>
-                <td>NOP</td>
-                <td>0x1D1D</td>
-              </tr>
-              <tr data-word-index="30">
-                <td>0x03C</td>
-                <td>NOP</td>
-                <td>0x1E1E</td>
-              </tr>
-              <tr data-word-index="31">
-                <td>0x03E</td>
-                <td>NOP</td>
-                <td>0x1F1F</td>
-              </tr>
-              <tr data-word-index="32">
-                <td>0x040</td>
-                <td>NOP</td>
-                <td>0x2020</td>
-              </tr>
-              <tr data-word-index="33">
-                <td>0x042</td>
-                <td>NOP</td>
-                <td>0x2121</td>
-              </tr>
-              <tr data-word-index="34">
-                <td>0x044</td>
-                <td>NOP</td>
-                <td>0x2222</td>
-              </tr>
-              <tr data-word-index="35">
-                <td>0x046</td>
-                <td>NOP</td>
-                <td>0x2323</td>
-              </tr>
-              <tr data-word-index="36">
-                <td>0x048</td>
-                <td>NOP</td>
-                <td>0x2424</td>
-              </tr>
-              <tr data-word-index="37">
-                <td>0x04A</td>
-                <td>NOP</td>
-                <td>0x2525</td>
-              </tr>
-              <tr data-word-index="38">
-                <td>0x04C</td>
-                <td>NOP</td>
-                <td>0x2626</td>
-              </tr>
-              <tr data-word-index="39">
-                <td>0x04E</td>
-                <td>NOP</td>
-                <td>0x2727</td>
-              </tr>
-              <tr data-word-index="40">
-                <td>0x050</td>
-                <td>NOP</td>
-                <td>0x2828</td>
-              </tr>
-              <tr data-word-index="41">
-                <td>0x052</td>
-                <td>NOP</td>
-                <td>0x2929</td>
-              </tr>
-              <tr data-word-index="42">
-                <td>0x054</td>
-                <td>NOP</td>
-                <td>0x2A2A</td>
-              </tr>
-              <tr data-word-index="43">
-                <td>0x056</td>
-                <td>NOP</td>
-                <td>0x2B2B</td>
-              </tr>
-              <tr data-word-index="44">
-                <td>0x058</td>
-                <td>NOP</td>
-                <td>0x2C2C</td>
-              </tr>
-              <tr data-word-index="45">
-                <td>0x05A</td>
-                <td>NOP</td>
-                <td>0x2D2D</td>
-              </tr>
-              <tr data-word-index="46">
-                <td>0x05C</td>
-                <td>NOP</td>
-                <td>0x2E2E</td>
-              </tr>
-              <tr data-word-index="47">
-                <td>0x05E</td>
-                <td>NOP</td>
-                <td>0x2F2F</td>
-              </tr>
-              <tr data-word-index="48">
-                <td>0x060</td>
-                <td>NOP</td>
-                <td>0x3030</td>
-              </tr>
-              <tr data-word-index="49">
-                <td>0x062</td>
-                <td>NOP</td>
-                <td>0x3131</td>
-              </tr>
-              <tr data-word-index="50">
-                <td>0x064</td>
-                <td>NOP</td>
-                <td>0x3232</td>
-              </tr>
-              <tr data-word-index="51">
-                <td>0x066</td>
-                <td>NOP</td>
-                <td>0x3333</td>
-              </tr>
-              <tr data-word-index="52">
-                <td>0x068</td>
-                <td>NOP</td>
-                <td>0x3434</td>
-              </tr>
-              <tr data-word-index="53">
-                <td>0x06A</td>
-                <td>NOP</td>
-                <td>0x3535</td>
-              </tr>
-              <tr data-word-index="54">
-                <td>0x06C</td>
-                <td>NOP</td>
-                <td>0x3636</td>
-              </tr>
-              <tr data-word-index="55">
-                <td>0x06E</td>
-                <td>NOP</td>
-                <td>0x3737</td>
-              </tr>
-              <tr data-word-index="56">
-                <td>0x070</td>
-                <td>NOP</td>
-                <td>0x3838</td>
-              </tr>
-              <tr data-word-index="57">
-                <td>0x072</td>
-                <td>NOP</td>
-                <td>0x3939</td>
-              </tr>
-              <tr data-word-index="58">
-                <td>0x074</td>
-                <td>NOP</td>
-                <td>0x3A3A</td>
-              </tr>
-              <tr data-word-index="59">
-                <td>0x076</td>
-                <td>NOP</td>
-                <td>0x3B3B</td>
-              </tr>
-              <tr data-word-index="60">
-                <td>0x078</td>
-                <td>NOP</td>
-                <td>0x3C3C</td>
-              </tr>
-              <tr data-word-index="61">
-                <td>0x07A</td>
-                <td>NOP</td>
-                <td>0x3D3D</td>
-              </tr>
-              <tr data-word-index="62">
-                <td>0x07C</td>
-                <td>NOP</td>
-                <td>0x3E3E</td>
-              </tr>
-              <tr data-word-index="63">
-                <td>0x07E</td>
-                <td>NOP</td>
-                <td>0x3F3F</td>
-              </tr>
-            </tbody>
-          </table>
+
+        <div class="mem-wrapper" style="
+    border-radius: 10px;
+">
+            <table class="mem-table" id="memTable" aria-label="memory table" style="text-align: center;border-radius: 10px;">
+                <thead>
+                <tr><th>Адрес</th><th>Команда</th><th>Код</th></tr>
+                </thead>
+                <tbody id="memBody"><tr data-word-index="0"><td>0x000</td><td>NOP</td><td>0x1105</td></tr><tr data-word-index="1"><td>0x002</td><td>NOP</td><td>0x4800</td></tr><tr data-word-index="2"><td>0x004</td><td>NOP</td><td>0x8440</td></tr><tr data-word-index="3"><td>0x006</td><td>NOP</td><td>0x1234</td></tr><tr data-word-index="4"><td>0x008</td><td>NOP</td><td>0x0404</td></tr><tr data-word-index="5"><td>0x00A</td><td>NOP</td><td>0x0505</td></tr><tr data-word-index="6"><td>0x00C</td><td>NOP</td><td>0x0606</td></tr><tr data-word-index="7"><td>0x00E</td><td>NOP</td><td>0x0707</td></tr><tr data-word-index="8"><td>0x010</td><td>NOP</td><td>0x0808</td></tr><tr data-word-index="9"><td>0x012</td><td>NOP</td><td>0x0909</td></tr><tr data-word-index="10"><td>0x014</td><td>NOP</td><td>0x0A0A</td></tr><tr data-word-index="11"><td>0x016</td><td>NOP</td><td>0x0B0B</td></tr><tr data-word-index="12"><td>0x018</td><td>NOP</td><td>0x0C0C</td></tr><tr data-word-index="13"><td>0x01A</td><td>NOP</td><td>0x0D0D</td></tr><tr data-word-index="14"><td>0x01C</td><td>NOP</td><td>0x0E0E</td></tr><tr data-word-index="15"><td>0x01E</td><td>NOP</td><td>0x0F0F</td></tr><tr data-word-index="16"><td>0x020</td><td>NOP</td><td>0x1010</td></tr><tr data-word-index="17"><td>0x022</td><td>NOP</td><td>0x1111</td></tr><tr data-word-index="18"><td>0x024</td><td>NOP</td><td>0x1212</td></tr><tr data-word-index="19"><td>0x026</td><td>NOP</td><td>0x1313</td></tr><tr data-word-index="20"><td>0x028</td><td>NOP</td><td>0x1414</td></tr><tr data-word-index="21"><td>0x02A</td><td>NOP</td><td>0x1515</td></tr><tr data-word-index="22"><td>0x02C</td><td>NOP</td><td>0x1616</td></tr><tr data-word-index="23"><td>0x02E</td><td>NOP</td><td>0x1717</td></tr><tr data-word-index="24"><td>0x030</td><td>NOP</td><td>0x1818</td></tr><tr data-word-index="25"><td>0x032</td><td>NOP</td><td>0x1919</td></tr><tr data-word-index="26"><td>0x034</td><td>NOP</td><td>0x1A1A</td></tr><tr data-word-index="27"><td>0x036</td><td>NOP</td><td>0x1B1B</td></tr><tr data-word-index="28"><td>0x038</td><td>NOP</td><td>0x1C1C</td></tr><tr data-word-index="29"><td>0x03A</td><td>NOP</td><td>0x1D1D</td></tr><tr data-word-index="30"><td>0x03C</td><td>NOP</td><td>0x1E1E</td></tr><tr data-word-index="31"><td>0x03E</td><td>NOP</td><td>0x1F1F</td></tr><tr data-word-index="32"><td>0x040</td><td>NOP</td><td>0x2020</td></tr><tr data-word-index="33"><td>0x042</td><td>NOP</td><td>0x2121</td></tr><tr data-word-index="34"><td>0x044</td><td>NOP</td><td>0x2222</td></tr><tr data-word-index="35"><td>0x046</td><td>NOP</td><td>0x2323</td></tr><tr data-word-index="36"><td>0x048</td><td>NOP</td><td>0x2424</td></tr><tr data-word-index="37"><td>0x04A</td><td>NOP</td><td>0x2525</td></tr><tr data-word-index="38"><td>0x04C</td><td>NOP</td><td>0x2626</td></tr><tr data-word-index="39"><td>0x04E</td><td>NOP</td><td>0x2727</td></tr><tr data-word-index="40"><td>0x050</td><td>NOP</td><td>0x2828</td></tr><tr data-word-index="41"><td>0x052</td><td>NOP</td><td>0x2929</td></tr><tr data-word-index="42"><td>0x054</td><td>NOP</td><td>0x2A2A</td></tr><tr data-word-index="43"><td>0x056</td><td>NOP</td><td>0x2B2B</td></tr><tr data-word-index="44"><td>0x058</td><td>NOP</td><td>0x2C2C</td></tr><tr data-word-index="45"><td>0x05A</td><td>NOP</td><td>0x2D2D</td></tr><tr data-word-index="46"><td>0x05C</td><td>NOP</td><td>0x2E2E</td></tr><tr data-word-index="47"><td>0x05E</td><td>NOP</td><td>0x2F2F</td></tr><tr data-word-index="48"><td>0x060</td><td>NOP</td><td>0x3030</td></tr><tr data-word-index="49"><td>0x062</td><td>NOP</td><td>0x3131</td></tr><tr data-word-index="50"><td>0x064</td><td>NOP</td><td>0x3232</td></tr><tr data-word-index="51"><td>0x066</td><td>NOP</td><td>0x3333</td></tr><tr data-word-index="52"><td>0x068</td><td>NOP</td><td>0x3434</td></tr><tr data-word-index="53"><td>0x06A</td><td>NOP</td><td>0x3535</td></tr><tr data-word-index="54"><td>0x06C</td><td>NOP</td><td>0x3636</td></tr><tr data-word-index="55"><td>0x06E</td><td>NOP</td><td>0x3737</td></tr><tr data-word-index="56"><td>0x070</td><td>NOP</td><td>0x3838</td></tr><tr data-word-index="57"><td>0x072</td><td>NOP</td><td>0x3939</td></tr><tr data-word-index="58"><td>0x074</td><td>NOP</td><td>0x3A3A</td></tr><tr data-word-index="59"><td>0x076</td><td>NOP</td><td>0x3B3B</td></tr><tr data-word-index="60"><td>0x078</td><td>NOP</td><td>0x3C3C</td></tr><tr data-word-index="61"><td>0x07A</td><td>NOP</td><td>0x3D3D</td></tr><tr data-word-index="62"><td>0x07C</td><td>NOP</td><td>0x3E3E</td></tr><tr data-word-index="63"><td>0x07E</td><td>NOP</td><td>0x3F3F</td></tr></tbody>
+            </table>
         </div>
-      </section>
-      <section class="col center">
-        <div class="machine">
-          <div class="machine-grid">
-            <div class="panel big-row">
-              <div class="alu">
-                <div class="alu-layout">
-                  <div class="reg-stack">
-                    <div class="reg-row">
-                      <div class="reg-group">
-                        <div class="reg-group-name">АЛУ</div>
-                        <div class="reg">
-                          <div class="name">ACC</div>
-                          <div class="val" id="ACC">0x0000</div>
+    </div>
+
+    <!-- CENTER: machine -->
+    <div style="width: 39%;" class="col center">
+        <div class="machine" style="
+    text-align: center;
+">
+            <!-- ALU / registers -->
+            <div style="
+    margin-top: 10px;
+    display: grid;
+    flex-direction: column;
+    align-content: center;
+    align-items: baseline;
+    justify-items: center;
+    justify-content: center;
+"><div class="panel big-row" style="
+    /* display: grid; */
+    /* align-content: space-around; */
+    /* justify-items: center; */
+    /* align-items: center; */
+    padding: 0;
+    justify-content: space-around;
+    background: none;
+">
+                <div class="alu">
+                    <div style="display:flex;justify-content: space-between;align-items:flex-end;">
+
+                    </div>
+
+                    <div style="height:12px"></div>
+
+                    <div style="
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+"><div style="text-align: left;display:flex;display: grid;gap: 15px;justify-content: space-evenly;align-items: flex-start;justify-items: start;">
+                        <div style="
+    display: flex;
+    gap: 15px;
+"><div class="reg-group">
+                            <div class="reg-group-name">АЛУ</div>
+                            <div class="reg"><div class="name">ACC</div><div class="val" id="ACC">0x0000</div></div>
+                            <div class="reg"><div class="name">DR</div><div class="val" id="DR">0x0000</div></div>
+                        </div><div class="reg-group">
+                            <div class="reg-group-name">IO</div>
+                            <div class="reg"><div class="name">IR</div><div class="val" id="IR">0x0000</div></div>
+                            <div class="reg"><div class="name">OR</div><div class="val" id="OR">0x0000</div></div>
+                        </div></div>
+
+                        <div class="reg-group" style="
+    width: 100%;
+">
+                            <div class="reg-group-name" style="
+    margin-left: 100px;
+">ОЗУ</div>
+                            <div class="reg"><div class="name">MAR</div><div class="val" id="MAR">0x0000</div><div class="name" style="
+    margin-left: 7px;
+">MDR</div><div class="val" id="MDR">0x0000</div></div>
+
                         </div>
-                        <div class="reg">
-                          <div class="name">DR</div>
-                          <div class="val" id="DR">0x0000</div>
+
+
+
+
+                        <div class="panel" style="text-align: left;padding:8px;/* display: inline-block; */">
+                            <div style="display:flex;/* display: inline-block; */justify-content:space-between;align-items:center">
+                                <div style="font-weight:700;margin-bottom: 7px;font-family: courier;font-size: 22px;">FLAGS</div>
+                            </div>
+                            <table class="mem-table" aria-label="memory table" style="width: 191px;height: 66px;color: #000;background: #fff;text-align: center;/* border-radius: 10px; *//* border-radius: 10px; *//* border: 1px solid; */border-radius: 10px;">
+                            <thead style="
+    width: 10px;
+    color: #000;
+    border-radius: 10px;
+">
+                            <tr style="
+    border-radius: 10px;
+">
+                                <th style="
+    color: #000;
+">Z</th><th style="
+    color: #000;
+">S</th><th style="
+    color: #000;
+">O</th><th style="
+    color: #000;
+">I</th><th style="
+    color: #000;
+">H</th>
+                            </tr>
+                            </thead>
+                            <tbody style="
+    padding: 10px;
+"><tr data-word-index="0" style="
+    padding: 1px;
+"><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+
+
+
+                            </tbody></table>
+                        </div></div><div class="reg-group" style="
+    border: 0;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+">
+
+                        <div class="reg"><div class="name">AR</div><div class="val" id="AR">0x0000</div></div>
+                        <div class="reg"><div class="name">PC</div><div class="val" id="PC">0x0000</div></div>
+                        <div class="reg"><div class="name">SP</div><div class="val" id="SP">03FE</div></div>
+                        <div class="reg"><div class="name">BR</div><div class="val" id="BR">0x0000</div></div>
+                    </div><div class="regs" style="
+    /* border: 1px solid; */
+    border-radius: 5px;
+    background: #fff;
+    padding-top: 10px;
+">
+                        <div class="reg-group-name" style="
+    /* position: relative; */
+    margin-left: 28px;
+    /* transform: translateY(-18px); */
+">РОН</div>
+
+                        <div class="regs-grid" id="gRegs">
+                            <div class="reg"><div class="name">R0</div><div class="val" id="R0">0x0000</div></div>
+                            <div class="reg"><div class="name">R1</div><div class="val" id="R1">0x0000</div></div>
+                            <div class="reg"><div class="name">R2</div><div class="val" id="R2">0x0000</div></div>
+                            <div class="reg"><div class="name">R3</div><div class="val" id="R3">0x0000</div></div>
+                            <div class="reg"><div class="name">R4</div><div class="val" id="R4">0x0000</div></div>
+                            <div class="reg"><div class="name">R5</div><div class="val" id="R5">0x0000</div></div>
+                            <div class="reg"><div class="name">R6</div><div class="val" id="R6">0x0000</div></div>
+                            <div class="reg"><div class="name">R7</div><div class="val" id="R7">0x0000</div></div>
                         </div>
                       </div>
                       <div class="reg-group">
@@ -499,22 +297,44 @@
             </div>
           </div>
         </div>
-      </section>
-      <div class="separator"></div>
-      <section class="col right">
-        <div class="toolbar code-toolbar">
-          <button id="btnSave" class="toolbar-btn primary">💾 Save</button>
-          <button class="toolbar-btn danger">📂 Load</button>
-          <span>Load to:</span>
-          <input class="toolbar-input" value="0x000" />
+    </div>
+
+    <!-- separator -->
+    <div style="width: 2px;background:var(--red);/* background: #fff; */"></div>
+
+    <!-- RIGHT: editor / controls -->
+    <div class="col right">
+        <div class="code-toolbar">
+            <button id="btnSave" style="
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 0;
+    background: #0f9d58;
+    color: #fff;
+">💾 Save</button>
+            <button style="
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 0;
+    background: #ff2e2e;
+    color: #fff;
+">📂 Load</button>
+            <span>Load to:</span>
+            <input value="0x000" style="
+    font-family: courier;
+    /* border-color: coral; */
+    /* border: 1px solid coral; */
+    text-align: right;
+    padding: 2px 2px;
+">
         </div>
-        <div class="editor" id="source" contenteditable="true">
-          Напиши программу в ассемблере для ЭВМ (пример: NOP, MOV, ADD и т.д.)
-        </div>
-        <div class="action-row">
-          <button id="loadExample" class="action-btn primary">Загрузить образец</button>
-          <button id="assemble" class="action-btn success">Ассемблировать</button>
-          <button id="clearMem" class="action-btn danger">Очистить ОЗУ</button>
+
+        <div class="editor" id="source" contenteditable="true">Напиши программу в ассемблере для ЭВМ (пример: NOP, MOV, ADD и т.д.)</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content: flex-end;">
+            <button id="loadExample" style="padding:8px 12px;border-radius:6px;border:0;background:#3b82f6;color:#fff">Загрузить образец</button>
+            <button id="assemble" style="padding:8px 12px;border-radius:6px;border:0;background:#0f9d58;color:#fff">Ассемблировать</button>
+            <button id="clearMem" style="padding:8px 12px;border-radius:6px;border:0;background:#ff6b6b;color:#fff">Очистить ОЗУ</button>
         </div>
         <div class="filename" aria-live="polite">Сообщения:</div>
         <div class="messages" id="log">17:50:46 — Sample memory initialized. Готово.</div>
@@ -525,6 +345,17 @@
       <div class="badge">ОЗУ</div>
       <div class="badge">Внешние устройства</div>
     </div>
+</div>
+
+<div class="bottom-info">
+    <div style="padding: 4px 8px;--padding-bottom: 8px;">CPU</div>
+    <div class="badge">ОЗУ</div>
+    <div class="badge">Внешние устройства</div>
+</div>
+
     <script src="Satus.js"></script>
-  </body>
+
+
+
+</body>
 </html>
