@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="header">
-    <div style="display:flex;align-items:center">
+    <div class="header-left">
         <div class="logo">Учебная ЭВМ</div>
         <div class="subtitle"></div>
     </div>
@@ -24,28 +24,16 @@
     <div class="col left">
 
         <div class="mem-toolbar">
-            <label style="
-    text-align: center;
-    width: 65px;
-"><input type="checkbox"><div>Follow PC</div></label>
-            <label style="
-    text-align: center;
-"><input type="checkbox"><div>BreackPoints</div></label><button>🧹 BP</button><button>⤵ PC</button>
+            <label class="checkbox-label"><input type="checkbox"><div>Follow PC</div></label>
+            <label class="checkbox-label"><input type="checkbox"><div>BreackPoints</div></label><button>🧹 BP</button><button>⤵ PC</button>
             <button>⇣ SP</button>
-            <input placeholder="0x020" style="
-    font-family: courier;
-    text-align: right;
-">
-            <button style="
-    height: 42px;
-">Go</button>
+            <input placeholder="0x020">
+            <button class="mem-go-btn">Go</button>
 
         </div>
 
-        <div class="mem-wrapper" style="
-    border-radius: 10px;
-">
-            <table class="mem-table" id="memTable" aria-label="memory table" style="text-align: center;border-radius: 10px;">
+        <div class="mem-wrapper">
+            <table class="mem-table" id="memTable" aria-label="memory table">
                 <thead>
                 <tr><th>Адрес</th><th>Команда</th><th>Код</th></tr>
                 </thead>
@@ -55,44 +43,19 @@
     </div>
 
     <!-- CENTER: machine -->
-    <div style="width: 39%;" class="col center">
-        <div class="machine" style="
-    text-align: center;
-">
+    <div class="col center">
+        <div class="machine">
             <!-- ALU / registers -->
-            <div style="
-    margin-top: 10px;
-    display: grid;
-    flex-direction: column;
-    align-content: center;
-    align-items: baseline;
-    justify-items: center;
-    justify-content: center;
-"><div class="panel big-row" style="
-    /* display: grid; */
-    /* align-content: space-around; */
-    /* justify-items: center; */
-    /* align-items: center; */
-    padding: 0;
-    justify-content: space-around;
-    background: none;
-">
+            <div class="machine-layout"><div class="panel big-row machine-panel">
                 <div class="alu">
-                    <div style="display:flex;justify-content: space-between;align-items:flex-end;">
+                    <div class="alu-header">
 
                     </div>
 
-                    <div style="height:12px"></div>
+                    <div class="spacer-12"></div>
 
-                    <div style="
-    display: flex;
-    gap: 15px;
-    justify-content: space-between;
-"><div style="text-align: left;display:flex;display: grid;gap: 15px;justify-content: space-evenly;align-items: flex-start;justify-items: start;">
-                        <div style="
-    display: flex;
-    gap: 15px;
-"><div class="reg-group">
+                    <div class="alu-section"><div class="reg-groups-grid">
+                        <div class="reg-pair"><div class="reg-group">
                             <div class="reg-group-name">АЛУ</div>
                             <div class="reg"><div class="name">ACC</div><div class="val" id="ACC">0x0000</div></div>
                             <div class="reg"><div class="name">DR</div><div class="val" id="DR">0x0000</div></div>
@@ -102,79 +65,38 @@
                             <div class="reg"><div class="name">OR</div><div class="val" id="OR">0x0000</div></div>
                         </div></div>
 
-                        <div class="reg-group" style="
-    width: 100%;
-">
-                            <div class="reg-group-name" style="
-    margin-left: 100px;
-">ОЗУ</div>
-                            <div class="reg"><div class="name">MAR</div><div class="val" id="MAR">0x0000</div><div class="name" style="
-    margin-left: 7px;
-">MDR</div><div class="val" id="MDR">0x0000</div></div>
+                        <div class="reg-group full-width">
+                            <div class="reg-group-name ram-label">ОЗУ</div>
+                            <div class="reg"><div class="name">MAR</div><div class="val" id="MAR">0x0000</div><div class="name mdr-label">MDR</div><div class="val" id="MDR">0x0000</div></div>
 
                         </div>
 
 
 
 
-                        <div class="panel" style="text-align: left;padding:8px;/* display: inline-block; */">
-                            <div style="display:flex;/* display: inline-block; */justify-content:space-between;align-items:center">
-                                <div style="font-weight:700;margin-bottom: 7px;font-family: courier;font-size: 22px;">FLAGS</div>
+                        <div class="panel flags-panel">
+                            <div class="flags-header">
+                                <div class="flags-title">FLAGS</div>
                             </div>
-                            <table class="mem-table" aria-label="memory table" style="width: 191px;height: 66px;color: #000;background: #fff;text-align: center;/* border-radius: 10px; *//* border-radius: 10px; *//* border: 1px solid; */border-radius: 10px;">
-                            <thead style="
-    width: 10px;
-    color: #000;
-    border-radius: 10px;
-">
-                            <tr style="
-    border-radius: 10px;
-">
-                                <th style="
-    color: #000;
-">Z</th><th style="
-    color: #000;
-">S</th><th style="
-    color: #000;
-">O</th><th style="
-    color: #000;
-">I</th><th style="
-    color: #000;
-">H</th>
+                            <table class="mem-table flags-table" aria-label="memory table">
+                            <thead class="flags-head">
+                            <tr class="flags-row">
+                                <th class="flags-cell">Z</th><th class="flags-cell">S</th><th class="flags-cell">O</th><th class="flags-cell">I</th><th class="flags-cell">H</th>
                             </tr>
                             </thead>
-                            <tbody style="
-    padding: 10px;
-"><tr data-word-index="0" style="
-    padding: 1px;
-"><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                            <tbody class="flags-body"><tr data-word-index="0" class="flags-body-row"><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 
 
 
                             </tbody></table>
-                        </div></div><div class="reg-group" style="
-    border: 0;
-    background: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-">
+                        </div></div><div class="reg-group side-registers">
 
                         <div class="reg"><div class="name">AR</div><div class="val" id="AR">0x0000</div></div>
                         <div class="reg"><div class="name">PC</div><div class="val" id="PC">0x0000</div></div>
                         <div class="reg"><div class="name">SP</div><div class="val" id="SP">03FE</div></div>
                         <div class="reg"><div class="name">BR</div><div class="val" id="BR">0x0000</div></div>
-                    </div><div class="regs" style="
-    /* border: 1px solid; */
-    border-radius: 5px;
-    background: #fff;
-    padding-top: 10px;
-">
-                        <div class="reg-group-name" style="
-    /* position: relative; */
-    margin-left: 28px;
-    /* transform: translateY(-18px); */
-">РОН</div>
+                    </div><div class="regs regs-panel">
+                        <div class="reg-group-name regs-title">РОН</div>
 
                         <div class="regs-grid" id="gRegs">
                             <div class="reg"><div class="name">R0</div><div class="val" id="R0">0x0000</div></div>
@@ -199,39 +121,21 @@
                 </div>
 
 
-            </div><div class="reg-group" style="
-    width: 100%;
-    /* display: inline-block; */
-    background: #ffffff;
-    border: 0;
-">
-                <div class="reg-group-name" style="
-    margin-left: 170px;
-">Поля инструкции</div>
-                <div style="
-    display: flex;
-    justify-content: space-between;
-"><div class="reg">
+            </div><div class="reg-group instruction-fields">
+                <div class="reg-group-name instruction-title">Поля инструкции</div>
+                <div class="instruction-row"><div class="reg">
                     <div class="name">INR</div><div class="val" id="INR">0x0000</div></div>
-                    <div class="reg">	<div class="name">EXT</div><div class="val" id="EXT">0x0000</div>
+                    <div class="reg">   <div class="name">EXT</div><div class="val" id="EXT">0x0000</div>
                     </div></div>
-                <div style="
-    display: flex;
-"><div class="reg">
-                    <div class="name">OPC</div><div class="val" id="OPC" style="
-    min-width: 44px;
-">0x00</div></div><div class="reg">
-                    <div class="name">ADT</div><div class="val" id="ADT" style="
-    min-width: 35px;
-">0x0</div></div><div class="reg">
-                    <div class="name">EXF</div><div class="val" id="EXF" style="
-    width: 10px;
-    min-width: 22px;
-">0</div></div><div class="reg">
-                    <div class="name">ARG</div><div class="val" id="ARG" style="
-    min-width: 44px;
-">0x00</div>
+                <div class="instruction-values"><div class="reg">
+                    <div class="name">OPC</div><div class="val opcode-val" id="OPC">0x00</div></div><div class="reg">
+                    <div class="name">ADT</div><div class="val adt-val" id="ADT">0x0</div></div><div class="reg">
+                    <div class="name">EXF</div><div class="val exf-val" id="EXF">0</div></div><div class="reg">
+                    <div class="name">ARG</div><div class="val arg-val" id="ARG">0x00</div>
                 </div></div>
+
+
+            </div></div>
 
 
 
@@ -243,51 +147,33 @@
     </div>
 
     <!-- separator -->
-    <div style="width: 2px;background:var(--red);/* background: #fff; */"></div>
+    <div class="separator"></div>
 
     <!-- RIGHT: editor / controls -->
     <div class="col right">
         <div class="code-toolbar">
-            <button id="btnSave" style="
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 0;
-    background: #0f9d58;
-    color: #fff;
-">💾 Save</button>
-            <button style="
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 0;
-    background: #ff2e2e;
-    color: #fff;
-">📂 Load</button>
+            <button id="btnSave" class="toolbar-button save-btn">💾 Save</button>
+            <button class="toolbar-button load-btn">📂 Load</button>
             <span>Load to:</span>
-            <input value="0x000" style="
-    font-family: courier;
-    /* border-color: coral; */
-    /* border: 1px solid coral; */
-    text-align: right;
-    padding: 2px 2px;
-">
+            <input value="0x000">
         </div>
 
         <div class="editor" id="source" contenteditable="true">Напиши программу в ассемблере для ЭВМ (пример: NOP, MOV, ADD и т.д.)</div>
 
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content: flex-end;">
-            <button id="loadExample" style="padding:8px 12px;border-radius:6px;border:0;background:#3b82f6;color:#fff">Загрузить образец</button>
-            <button id="assemble" style="padding:8px 12px;border-radius:6px;border:0;background:#0f9d58;color:#fff">Ассемблировать</button>
-            <button id="clearMem" style="padding:8px 12px;border-radius:6px;border:0;background:#ff6b6b;color:#fff">Очистить ОЗУ</button>
+        <div class="action-row">
+            <button id="loadExample" class="action-button example-btn">Загрузить образец</button>
+            <button id="assemble" class="action-button assemble-btn">Ассемблировать</button>
+            <button id="clearMem" class="action-button clear-btn">Очистить ОЗУ</button>
         </div>
 
-        <div style="margin-top:12px;font-weight:700;color:#333">Сообщения:</div>
+        <div class="messages-title">Сообщения:</div>
         <div class="messages" id="log">17:50:46 — Sample memory initialized.
             Готово.</div>
     </div>
 </div>
 
 <div class="bottom-info">
-    <div style="padding: 4px 8px;--padding-bottom: 8px;">CPU</div>
+    <div class="bottom-title">CPU</div>
     <div class="badge">ОЗУ</div>
     <div class="badge">Внешние устройства</div>
 </div>
