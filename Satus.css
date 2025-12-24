@@ -31,6 +31,7 @@
         }
         .logo{font-size:20px;font-weight:700;}
         .subtitle{font-size:12px;opacity:0.95;margin-left:10px}
+        .header-left{display:flex;align-items:center}
         .header-right{margin-left:auto;display:flex;gap:14px;align-items:center}
         .controls{display:flex;gap:8px;align-items:center}
         .ctrl-btn{width:36px;height:36px;border-radius:6px;background:#0f9d58;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:inset 0 -2px rgba(0,0,0,0.15)}
@@ -64,13 +65,13 @@
         .left{width: 28%;border-right: 1px solid #e6e6e6;}
         .center{display: flex;
             justify-content: center;
-            align-items: flex-start;}
+            align-items: flex-start;width:39%;}
         .right{flex:1;padding:18px}
 
         /* left memory */
         .mem-title{font-weight:700;margin-bottom:8px;color:#333}
-        .mem-wrapper{height:90%;overflow:auto;border:1px solid #e9e9e9;--padding:8px;background:#fff}
-        table.mem-table{width:100%;border-collapse:collapse;font-size:13px}
+        .mem-wrapper{height:90%;overflow:auto;border:1px solid #e9e9e9;--padding:8px;background:#fff;border-radius:10px;}
+        table.mem-table{width:100%;border-collapse:collapse;font-size:13px;text-align:center;border-radius:10px;}
         table.mem-table th{background:#fafafa;color:#555;padding:8px;border-bottom:1px solid #eee;position:sticky;top:0}
         table.mem-table td{padding:6px 8px;border-bottom:1px solid #f3f3f3;font-family:monospace}
         table.mem-table tr:hover td{background:#fff7ed;cursor:pointer}
@@ -85,11 +86,13 @@
             border-radius: 8px;
             font-size: 13px;
         }
+        .mem-toolbar .checkbox-label{text-align:center;width:65px;}
 
         .mem-toolbar input{
             width: 65px;
             font-family:monospace;
             padding:4px;
+            text-align:right;
         }
 
         .mem-toolbar button{
@@ -99,6 +102,7 @@
             background:#fff;
             cursor:pointer;
         }
+        .mem-go-btn{height:42px;}
 
         .code-toolbar{
             display: flex;
@@ -110,13 +114,26 @@
         .code-toolbar input{
             width:80px;
             font-family:monospace;
+            text-align:right;
+            padding:2px 2px;
         }
+
+        .toolbar-button{padding:6px 12px;border-radius:6px;border:0;color:#fff;}
+        .toolbar-button.save-btn{background:#0f9d58;}
+        .toolbar-button.load-btn{background:#ff2e2e;}
 
         /* center machine */
         .machine{width: 760px;
             max-width: 100%;
-            padding: 10px;}
+            padding: 10px;text-align:center;}
         .panel{padding:10px;border-radius:6px;margin-bottom:12px}
+        .machine-layout{margin-top:10px;display:grid;flex-direction:column;align-content:center;align-items:baseline;justify-items:center;justify-content:center;}
+        .machine-panel{padding:0;justify-content:space-around;background:none;display:flex;}
+        .alu-header{display:flex;justify-content:space-between;align-items:flex-end;}
+        .spacer-12{height:12px;}
+        .alu-section{display:flex;gap:15px;justify-content:space-between;}
+        .reg-groups-grid{text-align:left;display:grid;gap:15px;justify-content:space-evenly;align-items:flex-start;justify-items:start;}
+        .reg-pair{display:flex;gap:15px;}
         .regs-grid{display: grid;
             grid-template-columns: repeat(1, 1fr);
             gap: 0px;
@@ -129,6 +146,7 @@
             padding-bottom: 6px;
             background: #fff;
             padding-top: 11px;}
+        .reg-group.full-width{width:100%;}
         .reg-group-name{font-weight: 700;
             color: #000;
             padding: 6px;
@@ -137,6 +155,7 @@
             margin-left: 35px;
             /* transform: translateX(58%); */
             position: absolute;}
+        .ram-label{margin-left:100px;}
         .reg{display: flex;
             justify-content: space-between;
             align-items: center;
@@ -156,6 +175,7 @@
             border: 1px solid #e6e6e6;
             min-width: 65px;
             text-align: center;}
+        .mdr-label{margin-left:7px;}
 
         .big-row{--display:flex;gap:12px}
         .alu{flex:1}
@@ -167,6 +187,26 @@
         .dec-field{text-align: center;}
         .dec-field-name{color: #444;font-weight: 700;font-size: 14px;padding-bottom: 7px;border: 1px solid #e0e0e0;padding-top: 7px;border-radius: 6px;background: #f7f7f8;margin-bottom: 8px;}
         .dec-field-value{background: #f7f7f8;padding: 8px;border: 1px solid #e0e0e0;border-radius: 6px;/* min-width: 90px; */height: 17px;width: 17px;text-align: center;font-family: monospace;}
+        .flags-panel{text-align:left;padding:8px;}
+        .flags-header{display:flex;justify-content:space-between;align-items:center;}
+        .flags-title{font-weight:700;margin-bottom:7px;font-family:courier;font-size:22px;}
+        .flags-table{width:191px;height:66px;color:#000;background:#fff;text-align:center;border-radius:10px;}
+        .flags-head{width:10px;color:#000;border-radius:10px;}
+        .flags-row{border-radius:10px;}
+        .flags-cell{color:#000;}
+        .flags-body{padding:10px;}
+        .flags-body-row{padding:1px;}
+        .side-registers{border:0;background:none;display:flex;flex-direction:column;justify-content:space-between;}
+        .regs-panel{border-radius:5px;background:#fff;padding-top:10px;}
+        .regs-title{margin-left:28px;}
+        .instruction-fields{width:100%;background:#ffffff;border:0;}
+        .instruction-title{margin-left:170px;}
+        .instruction-row{display:flex;justify-content:space-between;}
+        .instruction-values{display:flex;}
+        .opcode-val{min-width:44px;}
+        .adt-val{min-width:35px;}
+        .exf-val{width:10px;min-width:22px;}
+        .arg-val{min-width:44px;}
 
         /* right editor */
         .toolbar{display:flex;gap:12px;align-items:center;margin-bottom:8px}
@@ -180,11 +220,19 @@
             overflow: auto;
             font-family: monospace;
             border-radius: 10px;}
+        .action-row{margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:flex-end;}
+        .action-button{padding:8px 12px;border-radius:6px;border:0;color:#fff;}
+        .example-btn{background:#3b82f6;}
+        .assemble-btn{background:#0f9d58;}
+        .clear-btn{background:#ff6b6b;}
+        .messages-title{margin-top:12px;font-weight:700;color:#333}
         .filename{font-weight:700;color:#444;margin-bottom:8px}
 
         /* bottom info */
         .bottom-info{position:fixed;left:50%;transform:translateX(-50%);bottom:0px;background:var(--red);color:#fff;padding-left: 14px;padding-right: 14px;padding-top: 6px;border-radius: 6px 6px 0px 0px;display:flex;gap:12px;align-items:center;font-size: 14px;}
         .badge{background:#fff;color:#333;padding:4px 8px;border-radius: 5px 5px 0px 0px;font-weight:700}
+        .bottom-title{padding: 4px 8px;--padding-bottom: 8px;}
+        .separator{width: 2px;background:var(--red);/* background: #fff; */}
 
         @media (max-width:1000px){
             .left{display:none}
