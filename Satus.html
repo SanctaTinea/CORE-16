@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Учебная ЭВМ — макет (v2.0)</title>
     <link rel="stylesheet" href="Satus.css">
 
@@ -25,18 +26,19 @@
     <div class="col left">
 
         <div class="mem-toolbar">
-            <label class="checkbox-label"><input type="checkbox">
-                <div>Follow PC</div>
-            </label>
-            <label class="checkbox-label"><input type="checkbox">
-                <div>BreackPoints</div>
-            </label>
-            <button>🧹 BP</button>
-            <button>⤵ PC</button>
-            <button>⇣ SP</button>
-            <input style="font-family: courier;" placeholder="0x020">
-            <button class="mem-go-btn">Go</button>
-
+          <label>
+            <input type="checkbox" />
+            <div>Follow PC</div>
+          </label>
+          <label>
+            <input type="checkbox" />
+            <div>BreackPoints</div>
+          </label>
+          <button class="toolbar-btn">🧹 BP</button>
+          <button class="toolbar-btn">⤵ PC</button>
+          <button class="toolbar-btn">⇣ SP</button>
+          <input class="toolbar-input" placeholder="0x020" />
+          <button class="toolbar-btn go-btn">Go</button>
         </div>
 
         <div class="mem-wrapper">
@@ -514,46 +516,117 @@
 
                             </div>
                         </div>
+                      </div>
+                      <div class="reg-group">
+                        <div class="reg-group-name">IO</div>
+                        <div class="reg">
+                          <div class="name">IR</div>
+                          <div class="val" id="IR">0x0000</div>
+                        </div>
+                        <div class="reg">
+                          <div class="name">OR</div>
+                          <div class="val" id="OR">0x0000</div>
+                        </div>
+                      </div>
                     </div>
-
-
+                    <div class="reg-group memory-group">
+                      <div class="reg-group-name">ОЗУ</div>
+                      <div class="reg">
+                        <div class="name">MAR</div>
+                        <div class="val" id="MAR">0x0000</div>
+                        <div class="name">MDR</div>
+                        <div class="val" id="MDR">0x0000</div>
+                      </div>
+                    </div>
+                    <div class="panel flag-panel">
+                      <div class="flag-title">FLAGS</div>
+                      <table class="mem-table flag-table" aria-label="flags table">
+                        <thead>
+                          <tr>
+                            <th>Z</th>
+                            <th>S</th>
+                            <th>O</th>
+                            <th>I</th>
+                            <th>H</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr data-word-index="0">
+                            <td id="flagZ">0</td>
+                            <td id="flagS">0</td>
+                            <td id="flagO">0</td>
+                            <td id="flagI">0</td>
+                            <td id="flagH">0</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-                <div class="reg-group instruction-fields">
-                    <div class="reg-group-name instruction-title">Поля инструкции</div>
-                    <div class="instruction-row">
-                        <div class="reg">
-                            <div class="name">INR</div>
-                            <div class="val" id="INR">0x0000</div>
-                        </div>
-                        <div class="reg">
-                            <div class="name">EXT</div>
-                            <div class="val" id="EXT">0x0000</div>
-                        </div>
+              </div>
+              <div class="regs">
+                <div class="regs-grid">
+                  <div class="reg-group">
+                    <div class="reg-group-name">Счётчики</div>
+                    <div class="reg">
+                      <div class="name">PC</div>
+                      <div class="val" id="PC">0x0000</div>
                     </div>
-                    <div class="instruction-values">
-                        <div class="reg">
-                            <div class="name">OPC</div>
-                            <div class="val opcode-val" id="OPC">0x00</div>
-                        </div>
-                        <div class="reg">
-                            <div class="name">ADT</div>
-                            <div class="val adt-val" id="ADT">0x0</div>
-                        </div>
-                        <div class="reg">
-                            <div class="name">EXF</div>
-                            <div class="val exf-val" id="EXF">0</div>
-                        </div>
-                        <div class="reg">
-                            <div class="name">ARG</div>
-                            <div class="val arg-val" id="ARG">0x00</div>
-                        </div>
+                    <div class="reg">
+                      <div class="name">SP</div>
+                      <div class="val" id="SP">0x0000</div>
                     </div>
-
-
+                  </div>
+                  <div class="reg-group">
+                    <div class="reg-group-name">Комб. логика</div>
+                    <div class="reg">
+                      <div class="name">MK</div>
+                      <div class="val" id="MK">0x0000</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">SL</div>
+                      <div class="val" id="SL">0x0000</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">SR</div>
+                      <div class="val" id="SR">0x0000</div>
+                    </div>
+                  </div>
                 </div>
+                <div class="reg-group decoder-panel">
+                  <div class="reg-group-name">Поля инструкции</div>
+                  <div class="decoder-row">
+                    <div class="reg">
+                      <div class="name">INR</div>
+                      <div class="val" id="INR">0x0000</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">EXT</div>
+                      <div class="val" id="EXT">0x0000</div>
+                    </div>
+                  </div>
+                  <div class="decoder-fields">
+                    <div class="reg">
+                      <div class="name">OPC</div>
+                      <div class="val wide" id="OPC">0x00</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">ADT</div>
+                      <div class="val narrow" id="ADT">0x0</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">EXF</div>
+                      <div class="val tiny" id="EXF">0</div>
+                    </div>
+                    <div class="reg">
+                      <div class="name">ARG</div>
+                      <div class="val wide" id="ARG">0x00</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
-
+          </div>
         </div>
     </div>
 
@@ -577,11 +650,14 @@
             <button id="assemble" class="action-button assemble-btn">Ассемблировать</button>
             <button id="clearMem" class="action-button clear-btn">Очистить ОЗУ</button>
         </div>
-
-        <div class="messages-title">Сообщения:</div>
-        <div class="messages" id="log">17:50:46 — Sample memory initialized.
-            Готово.
-        </div>
+        <div class="filename" aria-live="polite">Сообщения:</div>
+        <div class="messages" id="log">17:50:46 — Sample memory initialized. Готово.</div>
+      </section>
+    </div>
+    <div class="bottom-info">
+      <div class="badge">CPU</div>
+      <div class="badge">ОЗУ</div>
+      <div class="badge">Внешние устройства</div>
     </div>
 
 </div>
