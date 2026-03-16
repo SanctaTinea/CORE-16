@@ -9,6 +9,7 @@ import {
   writeWord,
 } from "./cpu.js";
 import { assemble } from "./asm.js";
+import { disassembleInstruction } from "./disasm.js";
 
 const REG_NAMES = [
   "ACC",
@@ -32,6 +33,11 @@ const REG_NAMES = [
   "R5",
   "R6",
   "R7",
+  "OPC",
+  "ADT",
+  "ARG",
+  "RAR",
+  "RDR",
 ];
 
 const FLAG_MAP = [
@@ -39,10 +45,11 @@ const FLAG_MAP = [
   { id: "flagS", mask: FLAG.S },
   { id: "flagO", mask: FLAG.O },
   { id: "flagI", mask: FLAG.I },
-  { id: "flagH", mask: FLAG.H },
+  { id: "flagE", mask: FLAG.E },
 ];
 
-const DISPLAY_ONLY = new Set(["INR", "EXT", "OPC", "ADT", "EXF", "ARG"]);
+const DISPLAY_ONLY = new Set(["INR", "EXT", "OPC", "ADT", "EXF", "ARG", "MAR", "MDR", "RAR", 'RDR',
+  "OUT"]);
 
 function parseValue(text) {
   const trimmed = text.trim();
@@ -62,14 +69,22 @@ function formatHex(value, digits = 4) {
 
 function getSourceValue() {
   const source = document.getElementById("source");
-  return source?.innerText ?? "";
+  return source?.value ?? "";
 }
 
 function setLog(message, isError = false) {
   const log = document.getElementById("log");
+  const messageDiv = document.createElement("div");
   if (!log) return;
-  log.textContent = message;
-  log.classList.toggle("log-error", isError);
+
+  messageDiv.textContent = message;
+  if (isError)   {
+    messageDiv.classList.add("error");
+  }
+
+  log.appendChild(messageDiv);
+  // log.textContent = message;
+  // log.classList.toggle("error", isError);
 }
 
 function buildMemTable() {
@@ -91,24 +106,31 @@ function buildMemTable() {
     } else {
       const decoded = decodeInstruction(word);
       mnemonic = decoded.mnemonic;
+      if (address + 2 < MEM.mem.length) {
+        mnemonic = disassembleInstruction(word, readWord(MEM, address + 2));
+      }
+      else {
+        mnemonic = disassembleInstruction(word, 0);
+      }
       if (instrType(decoded.opc) === 2) {
         expectOperand = true;
       }
     }
 
-    const row = document.createElement("tr");
+    const row = document.createElement("div");
+    row.className = "row";
     row.dataset.address = String(address);
 
-    const addrCell = document.createElement("td");
+    const addrCell = document.createElement("span");
     addrCell.textContent = formatHex(address, 4);
 
-    const mnemonicCell = document.createElement("td");
+    const mnemonicCell = document.createElement("span");
     mnemonicCell.textContent = mnemonic;
 
-    const valueCell = document.createElement("td");
+    const valueCell = document.createElement("span");
     const input = document.createElement("input");
     input.type = "text";
-    input.className = "mem-input";
+    input.className = "mem-value";
     input.value = formatHex(word, 4);
     input.dataset.address = String(address);
     input.addEventListener("change", onMemEdit);
@@ -119,15 +141,13 @@ function buildMemTable() {
     row.appendChild(valueCell);
     tbody.appendChild(row);
   }
-
-  highlightPC();
 }
 
 function highlightPC() {
   const tbody = document.getElementById("memBody");
   if (!tbody) return;
-  tbody.querySelectorAll("tr").forEach((row) => {
-    row.classList.toggle("mem-active", Number(row.dataset.address) === CPU.PC);
+  tbody.querySelectorAll("div").forEach((row) => {
+    row.classList.toggle("current", Number(row.dataset.address) === CPU.PC);
   });
 }
 
@@ -141,7 +161,103 @@ function onMemEdit(event) {
     return;
   }
   writeWord(MEM, address, parsed);
+  //MEM.mem[address] = parsed;
+  //MEM.mem[address] = parseInt(input.value.trim(), 16) & 0xFF;
+  refreshMemoryViews();
+}
+
+function byteToAscii(byte) {
+  return byte >= 32 && byte <= 126 ? String.fromCharCode(byte) : ".";
+}
+
+function buildHexTable() {
+  const hexBody = document.getElementById("hexBody");
+  if (!hexBody) return;
+
+  hexBody.innerHTML = "";
+
+  const bytes = MEM.mem;
+  const bytesPerRow = 16;
+
+  for (let base = 0; base < bytes.length; base += bytesPerRow) {
+    const row = document.createElement("div");
+    row.className = "hex-row";
+    row.dataset.base = String(base);
+
+    const addr = document.createElement("span");
+    addr.textContent = `${base.toString(16).toUpperCase().padStart(4, "0")}:`;
+    row.appendChild(addr);
+
+    //console.log(base, base / bytesPerRow, CPU.PC, CPU.PC / bytesPerRow)
+
+    if (Math.floor(base / bytesPerRow) === Math.floor(CPU.PC / bytesPerRow)) {
+      row.classList.add("selected");
+    }
+
+    let ascii = "";
+
+    for (let i = 0; i < bytesPerRow; i += 1) {
+      const address = base + i;
+      const value = bytes[address] ?? 0;
+
+      const cell = document.createElement("input");
+      cell.type = "text";
+      cell.maxLength = 2;
+      cell.className = "hex-byte";
+      cell.value = value.toString(16).toUpperCase().padStart(2, "0");
+      cell.dataset.address = String(address);
+
+      if (address === CPU.PC) {
+        cell.classList.add("pc-byte");
+      }
+      if (address === CPU.MAR) {
+        cell.classList.add("mar-byte");
+      }
+
+      cell.addEventListener("change", onHexEdit);
+      row.appendChild(cell);
+
+      ascii += byteToAscii(value);
+    }
+
+    const asciiCell = document.createElement("span");
+    asciiCell.className = "ascii-col";
+    asciiCell.textContent = ascii;
+    row.appendChild(asciiCell);
+
+    hexBody.appendChild(row);
+  }
+}
+
+function flashHexCell(address) {
+  const cell = document.querySelector(`.hex-byte[data-address="${address}"]`);
+  if (!cell) return;
+  cell.classList.remove("changed");
+  void cell.offsetWidth;
+  cell.classList.add("changed");
+}
+
+function onHexEdit(event) {
+  if (isRunning) return;
+
+  const input = event.target;
+  const address = Number(input.dataset.address);
+  const value = input.value.trim();
+
+  if (!/^[0-9a-fA-F]{1,2}$/.test(value)) {
+    input.value = (MEM.mem[address] ?? 0).toString(16).toUpperCase().padStart(2, "0");
+    return;
+  }
+
+  MEM.mem[address] = parseInt(value, 16) & 0xFF;
+
+  refreshMemoryViews();
+}
+
+function refreshMemoryViews() {
   buildMemTable();
+  buildHexTable();
+  highlightPC();
 }
 
 function updateRegisters() {
@@ -173,7 +289,14 @@ function updateRegisters() {
   for (const flag of FLAG_MAP) {
     const cell = document.getElementById(flag.id);
     if (!cell) continue;
-    cell.textContent = CPU.getFlag(flag.mask) ? "1" : "0";
+    if (CPU.getFlag(flag.mask)) {
+      cell.textContent = flag.id[4] + " 1";
+      cell.classList.add("active");
+    }
+    else {
+      cell.textContent = flag.id[4] + " 0";
+      cell.classList.remove("active");
+    }
   }
 }
 
@@ -205,15 +328,19 @@ function bindRegisterInputs() {
 function setRunningState(running) {
   const source = document.getElementById("source");
   const assembleBtn = document.getElementById("assemble");
-  const clearBtn = document.getElementById("clearMem");
-  const memInputs = document.querySelectorAll(".mem-input");
+  const resetBtn = document.getElementById("resetBtn");
+  const clearMemBtn = document.getElementById("clearMemBtn");
+  const clearRegBtn = document.getElementById("clearRegBtn");
+  const memInputs = document.querySelectorAll(".mem-value");
 
   if (source) {
     source.setAttribute("contenteditable", String(!running));
     source.classList.toggle("disabled", running);
   }
   if (assembleBtn) assembleBtn.disabled = running;
-  if (clearBtn) clearBtn.disabled = running;
+  if (resetBtn) resetBtn.disabled = running;
+  if (clearMemBtn) clearMemBtn.disabled = running;
+  if (clearRegBtn) clearRegBtn.disabled = running;
 
   for (const name of REG_NAMES) {
     const element = document.getElementById(name);
@@ -230,22 +357,65 @@ function setRunningState(running) {
   });
 }
 
+function updateLineNumbers() {
+  const source = document.getElementById("source");
+  const lineNumbers = document.getElementById("lineNumbers");
+  if (!source || !lineNumbers) return;
+
+  const lineCount = source.value.split("\n").length;
+  let lines = "";
+
+  for (let i = 1; i <= lineCount; i += 1) {
+    lines += i + "\n";
+  }
+
+  lineNumbers.textContent = lines;
+}
+
+function syncLineNumbersScroll() {
+  const source = document.getElementById("source");
+  const lineNumbers = document.getElementById("lineNumbers");
+  if (!source || !lineNumbers) return;
+
+  lineNumbers.style.transform = `translateY(${-source.scrollTop}px)`;
+}
+
+function initEditorLineNumbers() {
+  const source = document.getElementById("source");
+  if (!source) return;
+
+  source.addEventListener("input", updateLineNumbers);
+  source.addEventListener("scroll", syncLineNumbersScroll);
+
+  updateLineNumbers();
+  syncLineNumbersScroll();
+}
+
 function onAssemble() {
   if (isRunning) return;
   try {
     assemble(getSourceValue(), 0, MEM);
-    buildMemTable();
+    refreshMemoryViews();
     setLog("Сборка завершена без ошибок.");
   } catch (error) {
     setLog(error.message, true);
   }
 }
 
+function scrollToPC() {
+  const currentRow = document.querySelector(`#memBody .row.current`);
+  currentRow?.scrollIntoView({ block: "center", behavior: "smooth" });
+
+  const pcHex = document.querySelector(`.hex-byte[data-address="${CPU.PC}"]`);
+  pcHex?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+}
+
 function onStep() {
   if (isRunning) return;
   CPU.step();
   updateRegisters();
-  buildMemTable();
+  refreshMemoryViews();
+  scrollToPC();
 }
 
 async function onRun() {
@@ -256,30 +426,56 @@ async function onRun() {
 
   await CPU.run({
     max: 100000,
-    intervalMs: 80,
+    intervalMs: 50,
     onStep: () => {
       updateRegisters();
-      highlightPC();
+      //highlightPC();
+      refreshMemoryViews();
+      //scrollToPC();
     },
   });
 
   isRunning = false;
   setRunningState(false);
   updateRegisters();
-  highlightPC();
+  refreshMemoryViews();
+  //highlightPC();
 }
 
 function onStop() {
   CPU.halted = true;
 }
 
-function onClear() {
+function onReset() {
   if (isRunning) return;
   MEM.clear();
   CPU.reset();
-  buildMemTable();
+  refreshMemoryViews();
   updateRegisters();
   setLog("ОЗУ очищено, регистры сброшены.");
+}
+
+function onClearMem() {
+  if (isRunning) return;
+  MEM.clear();
+  refreshMemoryViews();
+  updateRegisters();
+  setLog("ОЗУ очищено.");
+}
+
+function onClearReg() {
+  if (isRunning) return;
+  CPU.reset();
+  refreshMemoryViews();
+  updateRegisters();
+  setLog("Регистры сброшены.");
+}
+
+function onClearCon() {
+  const log = document.getElementById("log");
+  log.replaceChildren();
+
+  setLog("Консоль была очищена.");
 }
 
 let isRunning = false;
@@ -289,18 +485,26 @@ function initUI() {
   const stepBtn = document.getElementById("stepBtn");
   const runBtn = document.getElementById("runBtn");
   const stopBtn = document.getElementById("stopBtn");
-  const clearBtn = document.getElementById("clearMem");
+  const resetBtn = document.getElementById("resetBtn");
+  const clearMemBtn = document.getElementById("clearMemBtn");
+  const clearRegBtn = document.getElementById("clearRegBtn");
+  const clearConBtn = document.getElementById("clearConBtn");
 
   assembleBtn?.addEventListener("click", onAssemble);
   stepBtn?.addEventListener("click", onStep);
   runBtn?.addEventListener("click", onRun);
   stopBtn?.addEventListener("click", onStop);
-  clearBtn?.addEventListener("click", onClear);
+  resetBtn?.addEventListener("click", onReset);
+  clearMemBtn?.addEventListener("click", onClearMem);
+  clearRegBtn?.addEventListener("click", onClearReg);
+  clearConBtn?.addEventListener("click", onClearCon);
 
   bindRegisterInputs();
-  buildMemTable();
+  refreshMemoryViews();
   updateRegisters();
   setRunningState(false);
+
+  initEditorLineNumbers();
 }
 
 export { initUI };

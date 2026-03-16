@@ -49,8 +49,11 @@ function assembleIns(mn, args, line, labels) {
   const type = instrType(opc);
   let ins = 0;
 
+  if (!opc && opc !== 0) {
+    throw new Error(`Unknown mnemocode "${mn}" at line ${line}`);
+  }
   if (instrOperands(opc) !== args.length) {
-    throw new Error(`Invalid count of arguments in command ${mn} at line ${line}`);
+    throw new Error(`Invalid count of arguments in command "${mn}" at line ${line}`);
   }
 
   if (type === 0) {
@@ -64,7 +67,7 @@ function assembleIns(mn, args, line, labels) {
 
     for (const param of opParam) {
       const mask = (1 << param.size) - 1;
-      const arg = parseOperand(args[argCount], labels);
+      const arg = parseOperand(args[argCount], labels, line);
       ins |= (arg.value << param.ofs) & (mask << param.ofs);
       argCount += 1;
     }
@@ -76,7 +79,7 @@ function assembleIns(mn, args, line, labels) {
     let argCount = 0;
 
     for (const param of opParam) {
-      const arg = parseOperand(args[argCount], labels);
+      const arg = parseOperand(args[argCount], labels, line);
       const mask = (1 << param.size) - 1;
       ins |= (arg.value << (param.ofs + 16)) & (mask << (param.ofs + 16));
       ins |= (arg.mode << 7) & 0x0380;
@@ -97,9 +100,9 @@ function parseNumber(str) {
   return null;
 }
 
-function parseOperand(arg, labels = {}) {
+function parseOperand(arg, labels = {}, line) {
   if (typeof arg !== "string" || arg.trim() === "") {
-    throw new Error("Пустой аргумент инструкции");
+    throw new Error(`Empty argument at line ${line}`);
   }
 
   const token = arg.trim();
@@ -120,16 +123,16 @@ function parseOperand(arg, labels = {}) {
   }
 
   if (token.startsWith("@")) {
-    return { mode: ADDR_MODE.MEM_INDIRECT, value: resolveValue(token.slice(1), labels) };
+    return { mode: ADDR_MODE.MEM_INDIRECT, value: resolveValue(token.slice(1), labels, line) };
   }
 
   match = token.match(/^\[(.+)\]$/);
   if (match) {
-    return { mode: ADDR_MODE.RELATIVE, value: resolveValue(match[1], labels) };
+    return { mode: ADDR_MODE.RELATIVE, value: resolveValue(match[1], labels, line) };
   }
 
   if (token.startsWith("#")) {
-    return { mode: ADDR_MODE.IMMEDIATE, value: resolveValue(token.slice(1), labels) };
+    return { mode: ADDR_MODE.IMMEDIATE, value: resolveValue(token.slice(1), labels, line) };
   }
 
   match = token.match(/^R([0-7])$/i);
@@ -137,10 +140,10 @@ function parseOperand(arg, labels = {}) {
     return { mode: ADDR_MODE.REGISTER, value: Number(match[1]) };
   }
 
-  return { mode: ADDR_MODE.DIRECT, value: resolveValue(token, labels) };
+  return { mode: ADDR_MODE.DIRECT, value: resolveValue(token, labels, line) };
 }
 
-function resolveValue(token, labels) {
+function resolveValue(token, labels, line) {
   const trimmed = token.trim();
   const num = parseNumber(trimmed);
   if (num !== null) {
@@ -149,7 +152,7 @@ function resolveValue(token, labels) {
   if (trimmed in labels) {
     return labels[trimmed];
   }
-  throw new Error(`Неизвестная метка: ${trimmed}`);
+  throw new Error(`Unknown label: ${trimmed} at line ${line}`);
 }
 
 function calcLabelBlockSizes(blocks, offset) {
@@ -167,10 +170,19 @@ function calcLabelBlockSizes(blocks, offset) {
 function syntaxError(state, ch, line, context = "") {
   const shown = ch === "\n" ? "\\n" : ch === "\0" ? "EOF" : ch;
   throw new Error(
-    `Syntax error at line ${line}: unexpected '${shown}' in state ${state}${context ? ` (${context})` : ""}`
+      `Syntax error at line ${line}: unexpected '${shown}' in state ${state}${context ? ` (${context})` : ""}`
   );
 }
 
+function normalizeSource(src) {
+  return src
+      .replace(/\r\n/g, '\n')
+      .replace(/\u00A0/g, ' ')
+      .replace(/\u2212/g, '-')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+const isSpace = (ch) =>
+    ch === ' ' || ch === '\t' || ch === '\u00A0' || ch === '\f' || ch === '\v';
 function parseASM(src) {
   const STR_START = 0;
   const LABEL_OPCODE = 1;
@@ -179,6 +191,8 @@ function parseASM(src) {
   const COMMA = 4;
   const NEXT_ARG = 5;
   const COMMENT = 6;
+
+  src = normalizeSource(src);
 
   let state = STR_START;
 
@@ -207,7 +221,7 @@ function parseASM(src) {
         if (isAlpha(ch)) {
           token += ch;
           state = LABEL_OPCODE;
-        } else if (ch === " ") {
+        } else if (isSpace(ch)) {
           // skip
         } else if (ch === ";") {
           state = COMMENT;
@@ -227,7 +241,7 @@ function parseASM(src) {
           lastLabel = token;
           token = "";
           state = STR_START;
-        } else if (ch === " ") {
+        } else if (isSpace(ch)) {
           currentOpc = token;
           token = "";
           state = ARG_START;
@@ -252,7 +266,7 @@ function parseASM(src) {
         break;
 
       case ARG_START:
-        if (ch === " ") {
+        if (isSpace(ch)) {
           // skip
         } else if (ch === ";") {
           insBlock.push({ OPC: currentOpc, ARG: currentArgs, line: lineCount });
@@ -278,7 +292,7 @@ function parseASM(src) {
       case ARG:
         if (isAlpha(ch) || isDigit(ch) || ch === "@" || ch === "]" || ch === "-" || ch === "+") {
           currentArg += ch;
-        } else if (ch === " ") {
+        } else if (isSpace(ch)) {
           currentArgs.push(currentArg);
           currentArg = "";
           state = COMMA;
@@ -307,7 +321,7 @@ function parseASM(src) {
         break;
 
       case COMMA:
-        if (ch === " ") {
+        if (isSpace(ch)) {
           // skip
         } else if (ch === ",") {
           state = NEXT_ARG;
@@ -328,7 +342,7 @@ function parseASM(src) {
         break;
 
       case NEXT_ARG:
-        if (ch === " ") {
+        if (isSpace(ch)) {
           // skip
         } else if (isAlpha(ch) || isDigit(ch) || ch === "#" || ch === "-" || ch === "@" || ch === "[") {
           currentArg += ch;
@@ -358,5 +372,46 @@ function parseASM(src) {
 
   return insBlocks;
 }
+
+const src = `
+        MOV R0, R0
+        ADD #1
+        MOV R1, R0
+
+        WR R0
+        ADD #5
+        SUB #1
+        WR R0
+        MOV R2, R0 ; R2 = 5
+        RD #1 ; ACC = 1
+        WR R4 ; R4 = ACC
+
+loop:
+        MOV R0, R1
+        RD R4 ; ACC = R4
+        MUL R2
+        WR R4 ; R4 = ACC
+        MOV R1, R0
+
+        MOV R0, R2
+        RD R2
+        DEC
+        WR R2
+        WR R0
+        ; MOV R2, R0
+        RD R2
+
+        CMP #0
+        JZ end
+        JMP loop
+
+end:
+        MOV R0, R1
+        RD R4
+        PUSH
+        POP
+        HLT
+    `
+//console.log(parseASM(src));
 
 export { assemble, parseASM };

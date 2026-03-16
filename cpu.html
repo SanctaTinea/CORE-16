@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Учебная ЭВМ — Dark UI Mockup</title>
+  <link rel="stylesheet" href="cpu.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="brand-title">Educational CPU Simulator</div>
+      </div>
+
+      <nav class="menu">
+        <a href="#">File</a>
+        <a href="#">Edit</a>
+        <a href="#">Run</a>
+        <a href="#">View</a>
+        <a href="#">Help</a>
+      </nav>
+
+      <div class="run-controls">
+        <button class="btn btn-accent" id="runBtn">Run</button>
+        <button class="btn btn-neutral" id="stepBtn">Step</button>
+        <button class="btn btn-neutral" id="stopBtn">Stop</button>
+        <button class="btn btn-danger" id="resetBtn">Reset</button>
+      </div>
+
+      <div style="display: none" class="window-actions">
+        <button aria-label="Minimize">—</button>
+        <button aria-label="Maximize">□</button>
+        <button aria-label="Close">✕</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="panel panel-memory-list sync-column">
+        <div class="panel-header">
+          <h2>Disassembled Memory</h2>
+          <div style="display: none" class="panel-header-meta">Instruction Table</div>
+        </div>
+
+        <div class="table-head memory-head">
+          <span>Address</span>
+          <span>Instruction</span>
+          <span>Code</span>
+        </div>
+
+        <div class="memory-table" id="memBody">
+          <div class="row current"><span>0x0000</span><span>NOP</span><span>0x1105</span></div>
+          <div class="row"><span>0x0001</span><span>NOP</span><span>0x0000</span></div>
+          <div class="row"><span>0x0002</span><span>NOP</span><span>0x8440</span></div>
+          <div class="row"><span>0x0003</span><span>NOP</span><span>0x1234</span></div>
+          <div class="row"><span>0x0004</span><span>NOP</span><span>0x0006</span></div>
+          <div class="row"><span>0x0005</span><span>NOP</span><span>0x0244</span></div>
+          <div class="row"><span>0x0006</span><span>NOP</span><span>0x0605</span></div>
+          <div class="row"><span>0x0007</span><span>NOP</span><span>0x0280</span></div>
+          <div class="row"><span>0x0008</span><span>NOP</span><span>0x0808</span></div>
+          <div class="row"><span>0x0010</span><span>NOP</span><span>0x0909</span></div>
+          <div class="row"><span>0x0011</span><span>NOP</span><span>0x082A</span></div>
+          <div class="row"><span>0x0012</span><span>NOP</span><span>0x0008</span></div>
+          <div class="row"><span>0x0013</span><span>NOP</span><span>0x0880</span></div>
+          <div class="row"><span>0x0014</span><span>NOP</span><span>0x0060</span></div>
+          <div class="row"><span>0x0015</span><span>NOP</span><span>0x05CF</span></div>
+          <div class="row"><span>0x0016</span><span>NOP</span><span>0x0E3E</span></div>
+          <div class="row"><span>0x0017</span><span>NOP</span><span>0xE09F</span></div>
+          <div class="row"><span>0x001A</span><span>NOP</span><span>0x122A</span></div>
+          <div class="row"><span>0x001B</span><span>NOP</span><span>0x131A</span></div>
+        </div>
+      </section>
+
+      <section class="stack-col ref-column">
+        <section class="panel panel-registers">
+          <div class="panel-header">
+            <h2>CPU Registers</h2>
+            <button class="icon-btn" id="clearRegBtn">⟳</button>
+          </div>
+
+          <div class="register-list">
+            <div class="reg"><span>ACC:</span><input class="reg-value" value="0x0056" id="ACC"></div>
+            <div class="reg"><span>DR:</span><input class="reg-value" value="0x3401" id="DR"></div>
+            <div class="reg"><span>PC:</span><input class="reg-value" value="0x0100" id="PC"></div>
+            <div class="reg"><span>SP:</span><input class="reg-value" value="0x07FF" id="SP"></div>
+            <div class="reg"><span>BR:</span><input class="reg-value" value="0x0000" id="BR"></div>
+<!--            <div class="gp-grid gp-grid-io">-->
+<!--              <div class="reg compact"><span>IN</span><input class="reg-value gpr" value="0x0000" id="IN"></div>-->
+<!--              <div class="reg compact"><span>OUT</span><input class="reg-value gpr" value="0x0034" id="OUT"></div>-->
+<!--            </div>-->
+          </div>
+
+          <div class="subpanel">
+            <div class="subpanel-title">FLAGS</div>
+            <div class="flags">
+              <div id="flagZ">Z <span>0</span></div>
+              <div id="flagS">S <span>0</span></div>
+              <div id="flagO">O <span>0</span></div>
+              <div id="flagI" class="active">I <span>1</span></div>
+              <div id="flagE">E <span>0</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel panel-general-registers">
+          <div class="panel-header">
+            <h2>General Registers</h2>
+          </div>
+          <div class="gp-grid">
+            <div class="reg compact"><span>R0</span><input class="reg-value gpr" value="0x0000" id="R0"></div>
+            <div class="reg compact"><span>R1</span><input class="reg-value gpr" value="0x0034" id="R1"></div>
+            <div class="reg compact"><span>R2</span><input class="reg-value gpr" value="0x0012" id="R2"></div>
+            <div class="reg compact"><span>R3</span><input class="reg-value gpr" value="0x0000" id="R3"></div>
+            <div class="reg compact"><span>R4</span><input class="reg-value gpr" value="0x0000" id="R4"></div>
+            <div class="reg compact"><span>R5</span><input class="reg-value gpr" value="0x0000" id="R5"></div>
+            <div class="reg compact"><span>R6</span><input class="reg-value gpr" value="0x0000" id="R6"></div>
+            <div class="reg compact"><span>R7</span><input class="reg-value gpr" value="0x0000" id="R7"></div>
+            <div class="reg compact"><span>RDR</span><input class="reg-value gpr" value="0x0000" id="RDR"></div>
+            <div class="reg compact"><span>RAR</span><input class="reg-value gpr" value="0x0000" id="RAR"></div>
+          </div>
+        </section>
+
+        <section class="panel panel-inr-registers">
+          <div class="panel-header">
+            <h2>Instructions Registers</h2>
+          </div>
+          <div class="gp-grid">
+            <div class="reg compact"><span>INR</span><input class="reg-value gpr" value="0x0293" id="INR"></div>
+            <div class="reg compact"><span>EXT</span><input class="reg-value gpr" value="0x00CB" id="EXT"></div>
+          </div>
+          <div class="subpanel-title">INR</div>
+          <div class="gp-grid" style="padding-top: 0px;">
+            <div class="reg compact"><span>OPC</span><input class="reg-value gpr" value="0x00" id="OPC"></div>
+            <div class="reg compact"><span>ADT</span><input class="reg-value gpr" value="0x0" id="ADT"></div>
+            <div class="reg compact"><span>ARG</span><input class="reg-value gpr" value="0x00CB" id="ARG"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="center-col sync-column">
+        <section class="panel panel-hex">
+          <div class="panel-header">
+            <h2>Hex Memory Viewer</h2>
+            <button class="icon-btn" id="clearMemBtn">⟳</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="field">Address: <strong>0x0000</strong></div>
+            <div class="field">Size: <strong>1 KB</strong></div>
+            <div class="field">16 bytes/row</div>
+            <div class="toggle">
+              <div class="gp-grid-ram">
+                <div class="reg compact"><span>MAR</span><input class="reg-value gpr" value="0x0293" id="MAR"></div>
+                <div class="reg compact"><span>MDR</span><input class="reg-value gpr" value="0x00CB" id="MDR"></div>
+              </div>
+<!--              Highlight:-->
+<!--              <span class="pill">PC</span>-->
+<!--              <span class="toggle-switch on"></span>-->
+            </div>
+          </div>
+
+          <div class="hex-table">
+            <div class="hex-head">
+              <span>Addr`</span>
+              <span>00</span><span>01</span><span>02</span><span>03</span>
+              <span>04</span><span>05</span><span>06</span><span>07</span>
+              <span>08</span><span>09</span><span>0A</span><span>0B</span>
+              <span>0C</span><span>0D</span><span>0E</span><span>0F</span>
+              <span class="ascii-col">......ASCII.....</span>
+            </div>
+
+            <div id="hexBody"></div>
+
+<!--            <div class="hex-row">-->
+<!--              <span>0000:</span>-->
+<!--              <span>20</span><span>00</span><span>4F</span><span>01</span><span>8A</span><span>03</span><span>40</span><span>02</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span>-->
+<!--              <span class="ascii-col">.O...@..........</span>-->
+<!--            </div>-->
+<!--            <div class="hex-row">-->
+<!--              <span>0010:</span>-->
+<!--              <span>70</span><span>22</span><span>3C</span><span>04</span><span>50</span><span>05</span><span>90</span><span>97</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span><span>00</span>-->
+<!--              <span class="ascii-col">p&lt;.P............</span>-->
+<!--            </div>-->
+<!--            <div class="hex-row selected">-->
+<!--              <span>0020:</span>-->
+<!--              <span>34</span><span>01</span><span>12</span><span>02</span><span>32</span><span>CB</span><span>70</span><span>10</span><span>56</span><span>01</span><span>18</span><span>03</span><span>80</span><span>11</span><span>00</span><span>00</span>-->
+<!--              <span class="ascii-col">4...2.p.V.......</span>-->
+<!--            </div>-->
+          </div>
+        </section>
+
+        <section class="panel panel-console">
+          <div class="panel-header">
+            <h2>Console | Display</h2>
+            <button class="icon-btn" id="clearConBtn">⟳</button>
+          </div>
+
+          <div class="console" id="log">
+            <div class="ok" >Пока функционал консоли минимален.</div>
+            <div style="display: none">
+              <div>[14:22:11] Program loaded. Entry point: <span class="hl">0x0020</span></div>
+              <div>[14:22:12] <span class="ok">Running...</span></div>
+              <div>[14:22:12] <span class="hl">PC=0x0036</span> &nbsp; [B=0x0134] &nbsp; LD R1, 52</div>
+              <div>[14:22:13] ACC = 0x0034, R1 = 0x0034</div>
+              <div>[14:22:13] <span class="hl">PC=0x0032</span> &nbsp; [B=0x0712] &nbsp; ADD R2, R1</div>
+              <div>[14:22:13] ACC = 0x0056, R2 = 0x0012, <span class="ok">FLAGS: Z=0 C=0</span></div>
+              <div>[14:22:15] PC = 0x0110</div>
+            </div>
+          </div>
+
+          <div style="display: none" class="console-footer">
+            <button class="ghost-btn">Clear</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel panel-assembly sync-column">
+        <div class="panel-header">
+          <h2>Assembly Code</h2>
+          <button class="icon-btn">☰</button>
+        </div>
+
+        <div class="code-editor">
+          <div class="line-numbers" id="lineNumbers">1</div>
+          <textarea class="assembly-code" spellcheck="false" wrap="off" id="source">
+; Флаги
+ADD #0xFF01
+ADD #0xFF01 ; переполнение
+ADD #0xFF01 ; переполнение
+ADD #1
+ADD #1
+ADD #1
+RD #1
+CMP #1 ; ноль
+DIV #0 ; ошибка
+CLRERR ; сброс флага ошибки
+EI     ; вкл. прерывание
+DI     ; выкл. прерывание
+
+
+
+; Режимы адресации
+RD #0x0100
+WR 0x200 ; адрес, где храниться 0x0100
+WR R0    ; регистр, где храниться 0x0100
+
+RD #0x200
+WR 0x100 ; адрес, где храниться другой адрес
+WR R5    ; регистр, где храниться другой адрес
+RD #0    ; абнуляем акуммулятор
+
+ADD #0x0100 ; непосредственная
+ADD 0x200   ; прямая
+ADD @0x100  ; косвенная
+ADD R0      ; регистровая
+ADD @R5     ; косвенная регистровая
+ADD @R5+    ; косвенная регистровая с постинкрементом
+ADD -@R5    ; косвенная регистровая с преддеккрементом
+
+
+
+; стек
+RD #0x20
+PUSH
+RD #0x30
+PUSH
+RD #0x40
+PUSH
+RD #0
+POP
+WR R0     ; 0X20
+POP
+WR R1     ; 0X30
+POP
+WR R2     ; 0X40
+
+
+; арифметика
+ADD #20     ; 0x0014
+SUB #5      ; 0x000F
+ADD #-5     ; 0x000A
+MUL #16     ; 0x00A0
+DIV #16     ; 0x000A
+MOD #7      ; 0x0003
+INC         ; 0x0004
+DEC         ; 0x0003
+AND #0x0002 ; 0x0002
+OR  #0x00FE ; 0x00FE
+XOR #0xFF80 ; 0xFF7E
+NOT         ; 0x0081
+SWL         ; 0x0102
+SWR         ; 0x0081</textarea>
+        </div>
+
+        <button class="btn btn-accent btn-compile" id="assemble">Assemble</button>
+
+        <footer style="display: none" class="bottombar">
+
+
+          <div class="status">
+            <span class="dot"></span>
+            <span>Clock: <b>1.2 MHz</b></span>
+            <span class="divider"></span>
+            <span>Cycles: <b>1250</b></span>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+  </div>
+
+  <script type="module" src="cpu_ui.js"></script>
+  <script type="module" src="main.js"></script>
+
+</body>
+</html>

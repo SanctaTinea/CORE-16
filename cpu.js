@@ -23,6 +23,8 @@ const REG = Object.freeze({
   R5: 18,
   R6: 19,
   R7: 20,
+  RAR: 21,
+  RDR: 22,
 });
 
 const OPC = Object.freeze({
@@ -30,6 +32,8 @@ const OPC = Object.freeze({
   EI: 0x01,
   DI: 0x02,
   HLT: 0x03,
+  RESET: 0x1D,
+  CLRERR: 0x1E,
 
   ADD: 0x20,
   SUB: 0x21,
@@ -84,6 +88,7 @@ const FLAG = Object.freeze({
   O: 1 << 3,
   I: 1 << 4,
   H: 1 << 5,
+  E: 1 << 6,
 });
 
 const MNEMONIC = Object.freeze({
@@ -91,6 +96,8 @@ const MNEMONIC = Object.freeze({
   EI: OPC.EI,
   DI: OPC.DI,
   HLT: OPC.HLT,
+  RESET: OPC.RESET,
+  CLRERR: OPC.CLRERR,
 
   ADD: OPC.ADD,
   SUB: OPC.SUB,
@@ -159,6 +166,8 @@ const INSTR_INFO = Object.freeze({
   [OPC.EI]: { type: 0, operands: 0 },
   [OPC.DI]: { type: 0, operands: 0 },
   [OPC.HLT]: { type: 0, operands: 0 },
+  [OPC.RESET]: { type: 0, operands: 0 },
+  [OPC.CLRERR]: { type: 0, operands: 0 },
 
   [OPC.ADD]: { type: 2, operands: 1, op_size_offset: [{ size: 16, ofs: 0 }] },
   [OPC.SUB]: { type: 2, operands: 1, op_size_offset: [{ size: 16, ofs: 0 }] },
@@ -275,8 +284,16 @@ class RAM {
 
   readIns(adr) {
     if (adr % 2 === 1) {
+      CPU_INSTANCE.setFlag(FLAG.E, 1);
       throw new Error("Instruction address must be even");
     }
+    CPU_INSTANCE.AR = adr;
+    CPU_INSTANCE.MAR = adr;
+    if (adr >= this.mem.length) {
+      CPU_INSTANCE.setFlag(FLAG.E, 1);
+      throw new Error("Out of memory");
+    }
+    CPU_INSTANCE.MDR = (this.mem[adr + 1] << 8) + this.mem[adr];
     return (this.mem[adr + 1] << 8) + this.mem[adr];
   }
 
@@ -286,14 +303,22 @@ class RAM {
 }
 
 function readWord(mem, adr) {
+  // CPU_INSTANCE.AR = adr;
+  // CPU_INSTANCE.MAR = adr;
+  // CPU_INSTANCE.MDR = mem.readIns(adr);
   return mem.readIns(adr);
 }
 
 function writeWord(mem, adr, value) {
   if (adr % 2 === 1) {
+    CPU_INSTANCE.setFlag(FLAG.E, 1);
     throw new Error("Instruction address must be even");
   }
   const word = U16(value);
+  if (adr >= mem.length) {
+    CPU_INSTANCE.setFlag(FLAG.E, 1);
+    throw new Error("Out of memory");
+  }
   mem[adr] = word & 0xff;
   mem[adr + 1] = (word >> 8) & 0xff;
 }
@@ -346,7 +371,7 @@ function readOperand(cpu, mem, mode, arg) {
 class CPU {
   constructor(mem) {
     this.mem = mem;
-    this.rf = new Uint16Array(21);
+    this.rf = new Uint16Array(23);
     this.debug = false;
     this.halted = false;
     this.rf[REG.SP] = 0x03fe;
@@ -375,10 +400,14 @@ class CPU {
     const mode = (ins >> 7) & 0x07;
     const data = ins & 0x3ff;
 
+    // может немного костыль, но пусть будет
+    if (this.getFlag(FLAG.E) === 1 && (opc !== OPC.RESET && opc !== OPC.CLRERR)) { return; }
+
     this._loadINR = ins;
     if (instrType(opc) === 2) {
       const ext = this.mem.readIns(adr + 2);
       this._loadEXT = ext;
+
       this.PC += 4;
       if (ISA[opc]) {
         ISA[opc](mode);
@@ -407,6 +436,7 @@ class CPU {
     const hi = this.mem[this.SP + 1];
     const v = (hi << 8) | lo;
     this.SP = this.SP + 2;
+    if (this.SP > 0x03FE) { this.setFlag(FLAG.E, 1); }
     return v;
   }
 
@@ -453,6 +483,12 @@ class CPU {
   get MDR() { return this._get(REG.MDR); }
   set MDR(v) { this._set(REG.MDR, v); }
 
+  get RAR() { return this._get(REG.RAR); }
+  set RAR(v) { this._set(REG.RAR, v); }
+
+  get RDR() { return this._get(REG.RDR); }
+  set RDR(v) { this._set(REG.RDR, v); }
+
   get IN() { return this._get(REG.IN); }
   set IN(v) { this._set(REG.IN, v); }
 
@@ -473,10 +509,12 @@ class CPU {
     this.FLAGS = on ? (f | mask) : (f & ~mask);
   }
 
+  // _updateZSO
   _updateZS(result16) {
     const r = U16(result16);
     this.setFlag(FLAG.Z, r === 0);
     this.setFlag(FLAG.S, (r & 0x8000) !== 0);
+    this.setFlag(FLAG.O, result16 > 0xFFFF);
   }
 
   snapshot() {
@@ -493,6 +531,8 @@ class CPU {
       MDR: this.MDR,
       IN: this.IN,
       OUT: this.OUT,
+      RAR: this.RAR,
+      RDR: this.RDR,
       FLAGS: this.FLAGS,
       R: Array.from(this.R),
     };
@@ -508,18 +548,27 @@ ISA[OPC.NOP] = () => {};
 ISA[OPC.EI] = () => CPU_INSTANCE.setFlag(FLAG.I, 1);
 ISA[OPC.DI] = () => CPU_INSTANCE.setFlag(FLAG.I, 0);
 ISA[OPC.HLT] = () => CPU_INSTANCE.halt();
+ISA[OPC.RESET] = () => {
+  CPU_INSTANCE.FLAGS = 0;
+  CPU_INSTANCE.SP = 0x03FE;
+  CPU_INSTANCE.PC = 0x0020;
+}
+ISA[OPC.CLRERR] = () => {
+  CPU_INSTANCE.setFlag(FLAG.E, 0);
+}
 
 ISA[OPC.ADD] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
   CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC + CPU_INSTANCE.DR;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC + CPU_INSTANCE.DR);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC + CPU_INSTANCE.DR;
+
 };
 ISA[OPC.SUB] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
   CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC - CPU_INSTANCE.DR;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC - CPU_INSTANCE.DR);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC - CPU_INSTANCE.DR;
 };
 ISA[OPC.CMP] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
@@ -529,20 +578,22 @@ ISA[OPC.CMP] = (mode) => {
 ISA[OPC.MUL] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
   CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC * CPU_INSTANCE.DR;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC * CPU_INSTANCE.DR);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC * CPU_INSTANCE.DR;
 };
 ISA[OPC.DIV] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
   CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC / CPU_INSTANCE.DR;
+  if (CPU_INSTANCE.DR === 0) { CPU_INSTANCE.setFlag(FLAG.E, 1); return; }
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC / CPU_INSTANCE.DR);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC / CPU_INSTANCE.DR;
 };
 ISA[OPC.MOD] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
   CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC % CPU_INSTANCE.DR;
+  if (CPU_INSTANCE.DR === 0) { CPU_INSTANCE.setFlag(FLAG.E, 1); return; }
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC % CPU_INSTANCE.DR);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC % CPU_INSTANCE.DR;
 };
 ISA[OPC.INC] = () => {
   const r = U16(CPU_INSTANCE.ACC + 1);
@@ -575,12 +626,12 @@ ISA[OPC.NOT] = () => {
   CPU_INSTANCE._updateZS(r);
 };
 ISA[OPC.SWL] = () => {
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC << 1;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC << 1);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC << 1;
 };
 ISA[OPC.SWR] = () => {
-  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC >> 1;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.ACC >> 1);
+  CPU_INSTANCE.ACC = CPU_INSTANCE.ACC >> 1;
 };
 
 ISA[OPC.PUSH] = () => {
@@ -626,7 +677,8 @@ ISA[OPC.MOV] = (data) => {
 };
 ISA[OPC.WR] = (mode) => {
   if (mode === ADDR_MODE.DIRECT) {
-    MEM[CPU_INSTANCE.EXT] = CPU_INSTANCE.ACC;
+    MEM[CPU_INSTANCE.EXT] = CPU_INSTANCE.ACC & 0xFF;
+    MEM[CPU_INSTANCE.EXT+1] = (CPU_INSTANCE.ACC >> 8) & 0xFF;
   }
   if (mode === ADDR_MODE.REGISTER) {
     CPU_INSTANCE.R[CPU_INSTANCE.EXT] = CPU_INSTANCE.ACC;
@@ -634,8 +686,7 @@ ISA[OPC.WR] = (mode) => {
 };
 ISA[OPC.RD] = (mode) => {
   const op = readOperand(CPU_INSTANCE, MEM, mode, CPU_INSTANCE.EXT);
-  CPU_INSTANCE.DR = U16(op);
-  CPU_INSTANCE.ACC = CPU_INSTANCE.DR;
+  CPU_INSTANCE.ACC = op;
   CPU_INSTANCE._updateZS(CPU_INSTANCE.DR);
 };
 ISA[OPC.WRBR] = () => {
