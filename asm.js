@@ -14,11 +14,13 @@ function assemble(src, origin = 0, mem = MEM) {
   calcLabelBlockSizes(blocks, origin);
   const labels = {};
 
+  //console.log(blocks);
   let byteSize = 0;
   for (const [label, instructions] of Object.entries(blocks)) {
     labels[label] = blocks[label].offset;
     byteSize += blocks[label].size;
   }
+  //console.dir(labels, { depth: null });
 
   const buffer = new RAM(byteSize);
   let offset = 0;
@@ -38,6 +40,7 @@ function assemble(src, origin = 0, mem = MEM) {
       }
     }
   }
+  //console.log(buffer);
 
   for (let i = 0; i < byteSize; i++) {
     mem[i + origin] = buffer[i];
@@ -339,6 +342,9 @@ function parseASM(src) {
           lineCount++;
           state = STR_START;
         }
+        else {
+          syntaxError("COMMA", ch, lineCount);
+        }
         break;
 
       case NEXT_ARG:
@@ -413,5 +419,7 @@ end:
         HLT
     `
 //console.log(parseASM(src));
+//console.dir(parseASM(src), { depth: null });
+assemble(src);
 
 export { assemble, parseASM };
