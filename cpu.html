@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Учебная ЭВМ — Dark UI Mockup</title>
+  <title>Educational CPU Simulator</title>
   <link rel="stylesheet" href="cpu.css" />
 </head>
 <body>
@@ -17,8 +17,8 @@
       </div>
 
       <nav class="menu">
-        <a href="#">File</a>
         <a href="#">Edit</a>
+        <a href="#">File</a>
         <a href="#">Run</a>
         <a href="#">View</a>
         <a href="#">Help</a>
@@ -310,6 +310,13 @@ SWR         ; 0x0081</textarea>
       </section>
     </main>
 
+  </div>
+
+  <div id="regTooltip" class="reg-tooltip hidden">
+    <div class="tooltip-title" id="tooltipTitle">ACC</div>
+    <div>HEX: <span id="tooltipHex"></span></div>
+    <div>BIN: <span id="tooltipBin"></span></div>
+    <div>DEC: <span id="tooltipDec"></span></div>
   </div>
 
   <script type="module" src="cpu_ui.js"></script>

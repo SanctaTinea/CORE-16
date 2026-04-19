@@ -300,6 +300,7 @@ function updateRegisters() {
   }
 }
 
+
 function bindRegisterInputs() {
   for (const name of REG_NAMES) {
     const element = document.getElementById(name);
@@ -480,6 +481,75 @@ function onClearCon() {
 
 let isRunning = false;
 
+
+function openRegisterTooltip(el) {
+  const name = el.id || 'Register';
+  const rawValue = parseInt(el.value, 16) & 0xFFFF;
+
+  const signedValue = rawValue & 0x8000
+      ? rawValue - 0x10000
+      : rawValue;
+
+  const bin = rawValue
+      .toString(2)
+      .padStart(16, '0')
+      .match(/.{1,4}/g)
+      .join(' ');
+
+  document.getElementById('tooltipTitle').textContent = name;
+  document.getElementById('tooltipHex').textContent =
+      '0x' + rawValue.toString(16).toUpperCase().padStart(4, '0');
+  document.getElementById('tooltipBin').textContent = bin;
+  document.getElementById('tooltipDec').textContent = signedValue;
+
+  tooltip.classList.remove('hidden');
+
+  positionTooltipNearElement(el, tooltip);
+}
+
+function hideRegisterTooltip() {
+  tooltip.classList.add('hidden');
+}
+
+function positionTooltipNearElement(el, tooltip) {
+  const rect = el.getBoundingClientRect();
+
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  let left = rect.right + 8 + scrollX;
+  let top = rect.top + scrollY;
+
+  const tooltipRect = tooltip.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // если справа не помещается — открыть слева
+  if (rect.right + 8 + tooltipRect.width > viewportWidth) {
+    left = rect.left + scrollX - tooltipRect.width - 8;
+  }
+
+  // если снизу не помещается — поднять выше
+  if (rect.top + tooltipRect.height > viewportHeight + window.scrollY) {
+    top = rect.bottom + scrollY - tooltipRect.height;
+  }
+
+  // защита от ухода за левую границу
+  if (left < scrollX + 4) {
+    left = scrollX + 4;
+  }
+
+  // защита от ухода за верхнюю границу
+  if (top < scrollY + 4) {
+    top = scrollY + 4;
+  }
+
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+}
+
+const tooltip = document.getElementById('regTooltip');
+
 function initUI() {
   const assembleBtn = document.getElementById("assemble");
   const stepBtn = document.getElementById("stepBtn");
@@ -505,6 +575,25 @@ function initUI() {
   setRunningState(false);
 
   initEditorLineNumbers();
+
+  document.querySelectorAll('.reg-value').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openRegisterTooltip(el);
+    });
+  });
+
+  document.addEventListener('click', () => {
+    hideRegisterTooltip();
+  });
+
+  window.addEventListener('scroll', () => {
+    hideRegisterTooltip();
+  });
+
+  window.addEventListener('resize', () => {
+    hideRegisterTooltip();
+  });
 }
 
 export { initUI };

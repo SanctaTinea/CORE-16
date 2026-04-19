@@ -623,7 +623,37 @@ a{
   flex: 1;
 }
 
+.reg-tooltip {
+  position: absolute;
+  z-index: 1000;
 
+  padding: 5px 10px;
+
+  background: #1f232b;
+  color: #f5f7fa;
+  border: 1px solid #3a404c;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.5;
+
+  pointer-events: none; /* чтобы не мешала кликам */
+}
+
+.reg-tooltip.hidden {
+  display: none;
+}
+
+.tooltip-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #ffd54a;
+}
+
+.reg-value {
+  cursor: pointer;
+}
 
 
 .code-editor {
