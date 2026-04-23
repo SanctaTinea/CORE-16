@@ -45,14 +45,13 @@ a{
 }
 
 .sync-column {
-  height: 1px;
+  /*height: 1px;*/
 }
 
 .app-shell{
-  min-height:100vh;
-  height: 100%;
+  height: 100vh;
   display:grid;
-  grid-template-rows:56px 1fr 70px;
+  grid-template-rows:56px 1fr 4px;
 }
 
 .topbar{
@@ -141,15 +140,45 @@ a{
 
 .workspace{
   padding: 14px;
-  display: flex;
-  /* display: grid; */
-  /* grid-template-columns: 330px 260px minmax(560px, 1fr) 300px; */
+  display: grid;
+  grid-template-columns: minmax(290px, 340px) minmax(210px, 280px) minmax(620px, 630px) minmax(340px, 1fr);
   gap: 14px;
-  /* min-height: 0; */
-  justify-content: space-between;
+  min-height: 0;
+  height: 100%;
 }
 
 .stack-col,
+.center-col,
+.panel-assembly,
+.panel-memory-list {
+  min-height: 0;
+}
+
+.ref-column{
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-registers {
+  flex: 1;
+}
+
+.panel-general-registers,
+.panel-inr-registers{
+  flex: 0 0 auto;
+}
+
+
+
+.stack-col {
+  display: flex;
+  flex-direction: column;
+  gap:14px;
+  min-height:0;
+  justify-content: space-between;
+}
 .center-col{
   display:grid;
   gap:14px;
@@ -619,8 +648,10 @@ a{
 }
 
 .panel-assembly{
-  min-height:0;
-  flex: 1;
+  min-width: 340px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .reg-tooltip {
@@ -662,7 +693,7 @@ a{
   overflow: hidden;
   flex: 1;
   background: #10131a;
-  min-height: 420px;
+  min-height: 0;
 }
 
 .line-numbers {
@@ -718,7 +749,7 @@ a{
 
 .btn{
   min-width: 60px;
-  height: 34px;
+  height: 4.6vh;
   padding: 0 14px;
   border-radius: 5px;
   font-weight: 700;
@@ -794,33 +825,71 @@ a{
   background:#3b4558;
 }
 
-@media (max-width: 1480px){
+@media (max-width: 4000px){
   .workspace{
-    grid-template-columns:310px 240px minmax(500px,1fr) 280px;
+    grid-template-columns: minmax(290px, 340px) minmax(210px, 280px) minmax(620px, 630px) minmax(340px, 1fr);
+    grid-template-areas:
+      "memory regs hex asm"
+      "memory inr console asm";
   }
 
-  .hex-head,
-  .hex-row{
-    display: flex;
-    gap: 12px;
-  }
+  .panel-memory-list{ grid-area: memory; }
+  .ref-column{ grid-area: regs; }
+  .panel-inr-registers{ grid-area: inr; }
+  .panel-hex{ grid-area: hex; min-height: 42vh; }
+  .panel-console{ grid-area: console; }
+  .panel-assembly{ grid-area: asm; }
 }
 
-@media (max-width: 1280px){
+@media (max-width: 1500px){
   .workspace{
-    grid-template-columns:1fr;
+    grid-template-columns: minmax(265px, 275px) minmax(220px, 220px) minmax(410px, 630px) minmax(254px, 1000px);
+    /*grid-template-areas:*/
+    /*  "memory regs hex"*/
+    /*  "console regs asm";*/
+    grid-template-areas:
+      "memory regs hex     asm"
+      "inr    regs console asm";
   }
 
-  .stack-col,
-  .center-col{
-    grid-template-rows:auto;
+  .field{ display: none; }
+
+  .panel-memory-list{ grid-area: memory; }
+  .ref-column{ grid-area: regs; }
+  .panel-inr-registers{ grid-area: inr; }
+  .panel-hex{ grid-area: hex; }
+  .panel-console{ grid-area: console; }
+  .panel-assembly{ grid-area: asm; min-width: 0px; }
+
+  .panel-inr-registers{ min-height: 125px; }
+  .hex-head, .hex-row {gap: 6px;}
+  .hex-head {gap: 6.7px;}
+}
+
+@media (max-width: 1100px){
+  .workspace{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "regs"
+      "inr"
+      "hex"
+      "memory"
+      "asm"
+      "console";
+  }
+
+  .ref-column,
+  .center-col,
+  .panel-memory-list,
+  .panel-assembly{
+    min-height: auto;
   }
 
   .panel-assembly{
-    min-height:400px;
+    min-height: 420px;
   }
 
-  .panel-hex{
-    min-height:420px;
+  .panel-memory-list{
+    min-height: 300px;
   }
 }
